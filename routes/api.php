@@ -7,6 +7,7 @@ use App\Http\Controllers\Back\Accadamics\CollegeController;
 use App\Http\Controllers\Back\Accadamics\DepartmentController;
 use App\Http\Controllers\Back\Accadamics\StudyLevelController;
 use App\Http\Controllers\Back\Accadamics\YearController;
+use App\Http\Controllers\Back\DeptHeadController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 
@@ -56,6 +57,11 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/get-year/{id}' ,[YearController::class, 'showYear']);
     Route::post('/update-year/{id}',[YearController::class,'updateYear']);
     
+    //department head
+    Route::get('/advisors' ,[DeptHeadController::class, 'getAdvisor']);
+    Route::post('/add-advisor',[DeptHeadController::class,'addAdvisor']);
+    Route::post('/update-advisor/{id}',[DeptHeadController::class,'updateAdvisor']);
+    Route::get('/students' ,[DeptHeadController::class, 'getStudents']);
 });
 
 

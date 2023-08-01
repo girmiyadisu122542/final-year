@@ -7,6 +7,8 @@ import AdmissionType from './pages/Accadamics/AdmissionType.vue'
 import Department from './pages/Accadamics/Department.vue'
 import Year from './pages/Accadamics/Year.vue'
 import StudyLevel from './pages/Accadamics/StudyLevel.vue'
+import Advisor from './pages/Department Head/Advisor.vue'
+import Student from './pages/Department Head/Student.vue'
 
 const routes = [
     { path : '/' ,name : 'Dashboard' ,component: Dashboard },
@@ -17,6 +19,8 @@ const routes = [
     { path : '/departments' , name : 'Department' , component : Department },
     { path : '/accadamic-years' , name : 'Year' , component : Year },
     { path : '/study-levels' , name : 'StudyLevel' , component : StudyLevel },
+    { path : '/advisors' , name : 'Advisor' , component : Advisor },
+    { path : '/students' , name : 'Student' , component : Student },
 ] 
 
 const router = createRouter({

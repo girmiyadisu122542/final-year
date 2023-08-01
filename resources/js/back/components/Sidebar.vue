@@ -66,7 +66,22 @@ import { RouterLink } from 'vue-router';
                     </ul>
                 </li>
             
-                
+                <li class="menu-label">Department Head</li>
+                <li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class="fadeIn animated bx bx-user"></i>
+                        </div>
+                        <div class="menu-title">Department Head</div>
+                    </a>
+                    <ul>
+                        <li> <RouterLink :to="{name : 'Advisor'}" ><i class="bx bx-right-arrow-alt"></i>Advisors</RouterLink>
+                        </li>
+                        <li> <RouterLink :to="{name : 'Student'}" ><i class="bx bx-right-arrow-alt"></i>Students</RouterLink>
+                        </li>
+                        
+                                           
+                    </ul>
+                </li>
              
             </ul>
             <!--end navigation-->
