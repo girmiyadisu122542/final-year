@@ -280,7 +280,7 @@ function showUser(id){
 						<div class="text-danger" v-if="errors.role && errTime == true"> *{{ errors.role[0] }}</div>
 
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6" v-if="role!=1">
 						<label for="validationCustom03" class="form-label">Department</label>
 						<select v-model="department" id="inputState "
 							class="form-select  border-primary text-primary">
@@ -391,7 +391,8 @@ function showUser(id){
 											<td>{{ user.full_name.toUpperCase() }}</td>
 											<td>{{ user.email }}</td>
 											<td>{{ user.role.name }}</td>
-											<td>{{ user.department.name }}</td>
+											<td v-if="user.department_id">{{ user.department.name }}</td>
+											<td v-else><span class="badge bg-light text-dark">No</span></td>
 											<td>{{ user.code }}</td>
 											<td><span :class="user.status == 0 ? 'badge bg-danger' : 'badge bg-success'">{{
 												user.status == 0 ? 'Deactive' : 'Active' }}</span></td>

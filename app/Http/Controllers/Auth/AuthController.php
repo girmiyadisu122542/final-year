@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -16,7 +19,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required'
         ]);
-       if(!Auth::attempt(['email' => $request->email,'password' =>$request->password ])){
+       if(!Auth::attempt(['email' => $request->email,'password' =>$request->password, ]) || $request->user()->status == 0){
         return response()->json([
             'message' => "Invalid Credentials! We can't find this match in our records!"
         ],401);
@@ -35,5 +38,64 @@ class AuthController extends Controller
     return response()->json([
         'message'=>'successfully logout!',
     ],200);
+   }
+
+   public function register(Request $request){
+       if($request->role!=null && $request->role == 'Student' ){
+        $request->validate([
+            'college' => 'required',
+            'study_level' => 'required',
+            'department' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed',
+            'role' => 'required',
+            'full_name' => 'required',
+        ]);
+       }else{
+        $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed',
+            'role' => 'required',
+            'full_name' => 'required',
+
+        ]);
+       }
+
+       $user = new User();
+        $user->full_name = $request->full_name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->admssion_type);
+        $user->department_id = $request->department;
+         if($request->role == 'Student'){
+            $user->role_id =10;
+        }else if($request->role == 'Researcher'){
+             $user->role_id =12;
+             $user->status = 1;
+            }else{
+                $user->role_id =16;
+                $user->status = 1;
+         }
+        $user->save();
+    //    try{
+    //     DB::beginTransaction();
+    //     $user = new User();
+    //     $user->full_name = $request->full_name;
+    //     $user->email = $request->email;
+    //     $user->password = Hash::make($request->admssion_type);
+    //     $user->department_id = $request->department;
+    //      if($request->role == 'Student'){
+    //         $user->role_id =16;
+    //     }else if($request->role == 'Researcher'){
+    //          $user->role_id =12;
+             
+    //         }else{
+    //          $user->role_id =10;
+    //      }
+    //     $user->save();
+    //     DB::commit();
+    // }catch(Exception $e){
+    //     DB::rollBack();
+    // }
+
    }
 }

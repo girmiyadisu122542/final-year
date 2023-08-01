@@ -63,7 +63,7 @@ import { useToast } from "vue-toastification";
                         <h2 class="font-weight-bold mb-3">Login</h2>
     
                         <p class="woocommerce-register">
-                            Don't have an account yet? <a href="#" class="text-decoration-underline">Sign Up for Free</a>
+                            Don't have an account yet? <RouterLink :to="{name:'Register'}" class="text-decoration-underline">Sign Up for Free</RouterLink>
                         </p>
                         <p class="text-danger" v-if="authError!=null  && errTime==true ">{{ authError }}</p>
                     </div>

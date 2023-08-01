@@ -5,11 +5,13 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Back\Accadamics\AdmissionTypeController;
 use App\Http\Controllers\Back\Accadamics\CollegeController;
 use App\Http\Controllers\Back\Accadamics\DepartmentController;
+use App\Http\Controllers\Back\Accadamics\StudyLevelController;
 use App\Http\Controllers\Back\Accadamics\YearController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 
 Route::post('/login',[AuthController::class,'login']);
+Route::post('/register',[AuthController::class,'register']);
 Route::middleware('auth:api')->group(function(){
     Route::post('/logout',[AuthController::class,'logout']);
 });
@@ -37,8 +39,12 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/delete-admissionType/{id}' ,[AdmissionTypeController::class, 'deleteAdmissionType']);
     Route::get('/get-admissionType/{id}' ,[AdmissionTypeController::class,'showAdmissionType']);
     Route::post('/update-admissionType/{id}',[AdmissionTypeController::class,'updateAdmissionType']);
+    //study level
+    Route::post('/add-studyLevel',[StudyLevelController::class,'addStudyLevel']);
+    Route::get('/delete-studyLevel/{id}' ,[StudyLevelController::class, 'deleteStudyLevel']);
+    Route::get('/get-studyLevel/{id}' ,[StudyLevelController::class,'showStudyLevel']);
+    Route::post('/update-studyLevel/{id}',[StudyLevelController::class,'updateStudyLevel']);
     //department
-
     Route::get('/departments',[DepartmentController::class,'index']);
     Route::post('/add-department',[DepartmentController::class,'addDepartment']);
     Route::get('/delete-department/{id}' ,[DepartmentController::class,'deleteDepartment']);
@@ -58,5 +64,6 @@ Route::get('/all-departments' ,[DepartmentController::class, 'allDept']);
 Route::get('/colleges' ,[CollegeController::class, 'index']);
 Route::get('/admissionTypes' ,[AdmissionTypeController::class, 'index']);
 Route::get('/years',[YearController::class,'index']);
+Route::get('/studyLevels' ,[StudyLevelController::class, 'index']);
 
 

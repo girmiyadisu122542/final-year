@@ -8,6 +8,7 @@ export const useBackendStore = defineStore('useBackendStore',()=>{
    const token = useLocalStorage('token');
    const colleges = ref({})
    const admissionTypes = ref({})
+   const studyLevels = ref({})
     function getDepartment(){
         axios.get('api/all-departments')
         .then(res=>{
@@ -41,18 +42,28 @@ export const useBackendStore = defineStore('useBackendStore',()=>{
             console.log(err);
         })
     }
+    function getStudyLevels(){
+        axios.get('api/studyLevels')
+        .then(res=>{
+            studyLevels.value = res.data;
+        }).catch(err=>{
+            console.log(err);
+        })
+    }
  
  onMounted(()=>{
     getDepartment(),
     getRole(),
     getCollege(),
-    getAdmissionTypes()
+    getAdmissionTypes(),
+    getStudyLevels()
  })
     return {
         departments,
         roles,
         colleges,
-        admissionTypes
+        admissionTypes,
+        studyLevels
     } 
     
 });

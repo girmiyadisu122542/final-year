@@ -54,6 +54,8 @@ import { RouterLink } from 'vue-router';
                         </li>
                         <li> <RouterLink :to="{name : 'AdmissionType'}" ><i class="bx bx-right-arrow-alt"></i>Admission Type</RouterLink>
                         </li>
+                        <li> <RouterLink :to="{name : 'StudyLevel'}" ><i class="bx bx-right-arrow-alt"></i>Study Level</RouterLink>
+                        </li>
                         <li> <RouterLink :to="{name : 'Department'}" ><i class="bx bx-right-arrow-alt"></i>Department</RouterLink>
                         </li>
                         <li> <RouterLink :to="{name : 'Year'}" ><i class="bx bx-right-arrow-alt"></i>Accadamic Year</RouterLink>

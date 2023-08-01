@@ -24,7 +24,7 @@ function logout(){
           toast.success("successfully Logged out!!",{
                 timeout:2000
             })
-         window.location.href="/";   
+         window.location.href="/login";   
       }).catch(err=>{
           console.log(err)
       })

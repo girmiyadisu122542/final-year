@@ -14,6 +14,10 @@ class Department extends Model
     public function admission(){
         return $this->belongsTo(AdmissionType::class,'admission_type_id');
 
+   }
+    public function study(){
+        return $this->belongsTo(StudyLevel::class,'study_level_id');
 
-    }
+   }
+
 }

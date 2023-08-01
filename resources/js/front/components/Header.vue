@@ -37,7 +37,7 @@ import { RouterLink } from 'vue-router';
                         </div>
 
                         <div class="header-btn text-center text-lg-end">
-                           <RouterLink to="/login"> <i class="fa fa-user-alt"></i> Login/Register</RouterLink>
+                           <a href="/login"> <i class="fa fa-user-alt"></i> Login/Register</a>
                         </div>
                    </div>
                 </div>

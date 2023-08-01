@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 class DepartmentController extends Controller
 {
     public function index(){
-        return response()->json(Department::with(['college','admission'])->get());
+        return response()->json(Department::with(['college','admission','study'])->get());
     }
     public function allDept(){
         return response()->json(Department::all());
@@ -32,9 +32,10 @@ class DepartmentController extends Controller
  
 public function addDepartment(Request $request){
     $validatedData = $request->validate([
-        'name'=>'required|string|min:3',
+        'name'=>'required|string|min:3|unique:departments,name',
         'college'=>'required',
         'admssion_type'=>'required',
+        'studyLevel'=>'required',
         'duration'=>'required|numeric'
         ]);
     try{
@@ -43,6 +44,7 @@ public function addDepartment(Request $request){
         $department->name = $request->name;
         $department->college_id = $request->college;
         $department->admission_type_id = $request->admssion_type;
+        $department->study_level_id = $request->studyLevel;
         $department->duration = $request->duration;
         $department->save();
         DB::commit();
@@ -59,9 +61,10 @@ public function showDepartment($id){
 public function updateDepartment(Request $request,$id){
     $department =  Department::where('id',$id)->first();
     $validatedData = $request->validate([
-        'name'=>'required|string|min:3',
+        'name'=>'required|string|min:3|unique:departments,name,'.$id,
         'college'=>'required',
         'admssion_type'=>'required',
+        'studyLevel'=>'required',
         'duration'=>'required|numeric'
         ]);
         
@@ -70,6 +73,7 @@ public function updateDepartment(Request $request,$id){
         $department->name = $request->name;
         $department->college_id = $request->college;
         $department->admission_type_id = $request->admssion_type;
+        $department->study_level_id = $request->studyLevel;
         $department->duration = $request->duration;
         $department->save();
         DB::commit();

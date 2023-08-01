@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->unsignedBigInteger('college_id');
             $table->unsignedBigInteger('admission_type_id');
+            $table->unsignedBigInteger('study_level_id');
             $table->integer('duration');
             $table->foreign('college_id')->references('id')->on('colleges')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('admission_type_id')->references('id')->on('admission_types')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('study_level_id')->references('id')->on('study_levels')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

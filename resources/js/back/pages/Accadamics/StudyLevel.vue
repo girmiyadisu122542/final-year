@@ -5,30 +5,23 @@ import { useLocalStorage } from '@vueuse/core';
 import { format } from 'date-fns'
 import Swal from "sweetalert2";
 import { useToast } from 'vue-toastification';
-import { useBackendStore } from '../../../stores/useBackendStore'
-    const toast = useToast();
-    const token = useLocalStorage('token')
-    const back = useBackendStore();
-    const departments = ref([]);
-    const isLoading = ref(false)
-    const isHide = ref(false)
-    const isSubmit = ref(false)
-    const errors = ref({});
-    const errTime = ref(false);
-    const name = ref('');
-    const college = ref('');
-    const admssion_type = ref('');
-	const studyLevel = ref('');
-    const duration = ref('');
-    const isEdit = ref(false)
-    const dataId= ref('');
+const toast = useToast();
+const token = useLocalStorage('token')
+const studytypes = ref([]);
+const isLoading = ref(false)
+const isHide = ref(false)
+const isSubmit = ref(false)
+const errors = ref({});
+const errTime = ref(false);
+const name = ref('');
+const isEdit = ref(false)
+const dataId= ref('');
 
 function loadData() {
 	isLoading.value = true
-   axios.defaults.headers.common['Authorization'] = token.value;
-	axios.get('api/departments')
+	axios.get('api/studyLevels')
 		.then(res => {
-			departments.value = res.data
+			studytypes.value = res.data
 			setTimeout(() => {
 				isLoading.value = false
 			}, 500);
@@ -55,9 +48,9 @@ function deleteData(id) {
 		if (result.isConfirmed) {
 
 			axios.defaults.headers.common['Authorization'] = token.value;
-			axios.get('api/delete-department/' + id)
+			axios.get('api/delete-studyLevel/' + id)
 				.then(() => {
-					departments.value = departments.value.filter(role => {
+					studytypes.value = studytypes.value.filter(role => {
 						return role.id != id;
 					})
 					toast.info("Data Successfully Deleted", {
@@ -78,12 +71,8 @@ function addData() {
 	if (isSubmit.value == true) return;
 	isSubmit.value = true
 	axios.defaults.headers.common['Authorization'] = token.value
-	axios.post('api/add-department', {
+	axios.post('api/add-studyLevel', {
 		'name': name.value,
-        'college':college.value,
-        'admssion_type':admssion_type.value,
-		'studyLevel':studyLevel.value,
-        'duration':duration.value
 		}).then(() => {
 			isHide.value = false
 			loadData();
@@ -116,12 +105,8 @@ function editUser(){
 	if (isSubmit.value == true) return;
 	axios.defaults.headers.common['Authorization'] = token.value
 	isSubmit.value = true
-	axios.post('api/update-department/'+dataId.value, {
-		'name': name.value,
-        'college':college.value,
-        'admssion_type':admssion_type.value,
-		'studyLevel':studyLevel.value,
-        'duration':duration.value
+	axios.post('api/update-studyLevel/'+dataId.value, {
+		'name': name.value
 	}).then(() => {
 			isHide.value = false
 			isEdit.value = false
@@ -171,7 +156,7 @@ function resetState() {
 function showData(id){
 
 	axios.defaults.headers.common['Authorization'] = token.value
-	axios.get('api/get-department/'+id)
+	axios.get('api/get-studyLevel/'+id)
 	.then(res=>{
 		isHide.value = true
 		isEdit.value = true
@@ -191,7 +176,7 @@ function showData(id){
 	<div class="page-content">
 		<!--breadcrumb-->
 		<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-2">
-			<div class="breadcrumb-title pe-3">Departments</div>
+			<div class="breadcrumb-title pe-3">Study Levels</div>
 			<div class="ps-3">
 				<nav aria-label="breadcrumb">
 					<ol class="breadcrumb mb-0 p-0">
@@ -199,7 +184,7 @@ function showData(id){
 							<a href="javascript:;"><i class="bx bx-home-alt"></i></a>
 						</li>
 						<li class="breadcrumb-item active" aria-current="page">
-							List of Departments
+							List of Study Levels
 						</li>
 
 					</ol>
@@ -215,61 +200,22 @@ function showData(id){
 				<div class="card-title d-flex align-items-center">
 					<div><i class="fadeIn animated bx bx-plus"></i>
 					</div>
-					<h5 class="mb-0 text-primary">Department Registration</h5>
+					<h5 class="mb-0 text-primary">Study Level Registration</h5>
 				</div>
 				<hr>
 				<form class="row g-3 ">
-					<div class="col-md-6">
-						<label for="validationCustom01" class="form-label">Department Name</label>
+					<div class="col-md-12">
+						<label for="validationCustom01" class="form-label">Study Level Name</label>
 						<input v-model="name" type="text" class="form-control border-primary" id="validationCustom01"
-							placeholder="Enter Department name">
+							placeholder="Enter study level name">
 						<div class="text-danger" v-if="errors.name && errTime == true">*{{ errors.name[0] }} </div>
 					</div>
-                    <div class="col-md-6">
-						<label for="validationCustom03" class="form-label">College</label>
-						<select v-model="college" id="inputState "
-							class="form-select  border-primary text-primary">
-							<i class="lni lni-funnel"></i>
-							<option selected="" disabled ="" value="">select college</option>
-							<option v-for="college in back.colleges" :value="college.id">{{ college.name }}</option>
 
-
-						</select>
-						<div class="text-danger" v-if="errors.college && errTime == true"> *{{ errors.college[0] }}</div>
-
-					</div>
-                    <div class="col-md-6">
-                        <label for="validationCustom01" class="form-label">Duration</label>
-						<input v-model="duration" type="number" class="form-control border-primary " id="validationCustom01" min="1">
-						<div class="text-danger" v-if="errors.duration && errTime == true">*{{ errors.duration[0] }} </div>
-					</div>
 					
-                    <div class="col-md-6">
-                        <label for="validationCustom03" class="form-label">Admission Type</label>
-                        <select v-model="admssion_type" id="inputState "
-                            class="form-select  border-primary text-primary">
-                            <option selected="" disabled ="" value="">select admission type</option>
-                            <option v-for="admssion in back.admissionTypes" :value="admssion.id">{{ admssion.name }}</option>
 
-
-                        </select>
-                        <div class="text-danger" v-if="errors.admssion_type && errTime == true"> *{{ errors.admssion_type[0] }}</div>
-
-                    </div>
-                    <div class="col-md-6">
-                        <label for="validationCustom03" class="form-label">Study Levels</label>
-                        <select v-model="studyLevel" id="inputState "
-                            class="form-select  border-primary text-primary">
-                            <option selected="" disabled ="" value="">select study levels</option>
-                            <option v-for="study in back.studyLevels" :value="study.id">{{ study.name }}</option>
-                        </select>
-                        <div class="text-danger" v-if="errors.study_level && errTime == true"> *{{ errors.study_level[0] }}</div>
-
-                    </div>
-                    
 					<div class="col-12">
 						<button :disabled="isSubmit" @click.prevent="isEdit?editUser():addData()" class="btn btn-primary"
-							type="submit"><i :class="isEdit?'fadeIn animated bx bx-edit-alt':'fadeIn animated bx bx-plus-circle'"></i> <span v-if="isSubmit" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>{{ isSubmit ?  ' Loading...' : isEdit? 'Update'  :'Add' }}</button>
+							type="submit"><i :class="isEdit?'fadeIn animated bx bx-edit-alt':'fadeIn animated bx bx-plus-circle'"></i><span v-if="isSubmit" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>{{ isSubmit ? 'Loading...' : isEdit? 'Update'  :'Add' }}</button>
 						<button class="btn  btn-danger" @click.prevent="resetState()"><i class="fadeIn animated bx bx-trash-alt"></i>Clear</button>	
 					</div>
 				</form>
@@ -337,11 +283,7 @@ function showData(id){
 								<thead>
 									<tr role="row">
 										<th>#</th>
-										<th>Department name</th>
-										<th>College</th>
-										<th>Admission Type</th>
-										<th>Study Level</th>
-										<th>Duration</th>
+										<th>Study Level name</th>
 										<th>CreatedAt</th>
 										<th>UpdatedAt</th>
 										<th width="5%">Actions</th>
@@ -359,16 +301,12 @@ function showData(id){
 
 								</template>
 								<template v-else>
-									<tbody v-if="departments.length!=0">
-										<tr role="row" v-for="(dept, index) in departments" :key="dept.index">
+									<tbody v-if="studytypes.length!=0">
+										<tr role="row" v-for="(study, index) in studytypes" :key="study.index">
 											<td>{{ index + 1 }}</td>
-											<td>{{ dept.name }}</td>
-											<td>{{ dept.college.name }}</td>
-											<td>{{ dept.admission.name }}</td>
-											<td>{{ dept.study.name }}</td>
-											<td>{{ dept.duration }}</td>
-											<td>{{ format(new Date(dept.created_at), 'MMMM do, yyyy') }}</td>
-											<td>{{ format(new Date(dept.updated_at), 'MMMM do, yyyy') }}</td>
+											<td>{{ study.name }}</td>
+											<td>{{ format(new Date(study.created_at), 'MMMM do, yyyy') }}</td>
+											<td>{{ format(new Date(study.updated_at), 'MMMM do, yyyy') }}</td>
                                             
 											<td>
 												<div class="btn-group" role="group"
@@ -381,10 +319,10 @@ function showData(id){
 															<i class="bx bx-chevron-down"></i>
 														</button>
 														<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
-															<li><button @click.prevent="showData(dept.id)" class="btn btn-outline-info dropdown-item "><i
+															<li><button @click.prevent="showData(study.id)" class="btn btn-outline-info dropdown-item "><i
 																		class="fadeIn animated bx bx-edit"></i>Edit</button>
 															</li>
-															<li><button @click.prevent="deleteData(dept.id)"
+															<li><button @click.prevent="deleteData(study.id)"
 																	class="btn btn-outline-danger dropdown-item"><i
 																		class="fadeIn animated bx bx-trash"></i>Delete</button>
 															</li>
