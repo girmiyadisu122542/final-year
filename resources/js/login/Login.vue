@@ -83,6 +83,7 @@ function addUser() {
         'password_confirmation': password_confirmation.value,
 
     }).then(() => {
+       
         window.location.href = '/login'
         toast.success("Successfully Registsered!!", {
             timeout: 2000
@@ -287,7 +288,7 @@ onMounted(() => {
                                     </div>
                                     <hr>
                                     <div class="form-body">
-                                        <form class="row g-3">
+                                        <form class="row g-4">
                                             <div class="col-sm-6">
                                                 <label for="inputFirstName" class="form-label">Full Name</label>
                                                 <input v-model="fullname" type="text" class="form-control"
@@ -313,7 +314,7 @@ onMounted(() => {
                                                         class="form-control border-end-0" placeholder="Enter Password">
                                             </div>
                                             <div class="col-sm-6">
-                                                <label for="inputSelectCountry" class="form-label">signup As</label>
+                                                <label for="inputSelectCountry" class="form-label">Sign Up As</label>
                                                 <select v-model="role" class="form-select"
                                                     aria-label="Default select example">
                                                     <option disabled selected="" value="">sign up as</option>

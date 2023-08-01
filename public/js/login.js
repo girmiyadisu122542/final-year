@@ -17478,7 +17478,7 @@ var _hoisted_65 = {
   "class": "form-body"
 };
 var _hoisted_66 = {
-  "class": "row g-3"
+  "class": "row g-4"
 };
 var _hoisted_67 = {
   "class": "col-sm-6"
@@ -17526,7 +17526,7 @@ var _hoisted_78 = {
 var _hoisted_79 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "inputSelectCountry",
   "class": "form-label"
-}, "signup As", -1 /* HOISTED */);
+}, "Sign Up As", -1 /* HOISTED */);
 var _hoisted_80 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
   disabled: "",
   selected: "",

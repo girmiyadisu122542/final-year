@@ -61,41 +61,27 @@ class AuthController extends Controller
         ]);
        }
 
-       $user = new User();
+       try{
+        DB::beginTransaction();
+        $user = new User();
         $user->full_name = $request->full_name;
         $user->email = $request->email;
-        $user->password = Hash::make($request->admssion_type);
+        $user->password = Hash::make($request->password);
         $user->department_id = $request->department;
          if($request->role == 'Student'){
             $user->role_id =10;
         }else if($request->role == 'Researcher'){
              $user->role_id =12;
-             $user->status = 1;
+                     
             }else{
-                $user->role_id =16;
-                $user->status = 1;
+             $user->role_id =16;
+             $user->status = 1;
          }
         $user->save();
-    //    try{
-    //     DB::beginTransaction();
-    //     $user = new User();
-    //     $user->full_name = $request->full_name;
-    //     $user->email = $request->email;
-    //     $user->password = Hash::make($request->admssion_type);
-    //     $user->department_id = $request->department;
-    //      if($request->role == 'Student'){
-    //         $user->role_id =16;
-    //     }else if($request->role == 'Researcher'){
-    //          $user->role_id =12;
-             
-    //         }else{
-    //          $user->role_id =10;
-    //      }
-    //     $user->save();
-    //     DB::commit();
-    // }catch(Exception $e){
-    //     DB::rollBack();
-    // }
+        DB::commit();
+    }catch(Exception $e){
+        DB::rollBack();
+    }
 
    }
 }
