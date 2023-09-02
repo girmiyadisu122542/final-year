@@ -17084,6 +17084,7 @@ function _readOnlyError(name) { throw new TypeError("\"" + name + "\" is read-on
     var password = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
     var isLogin = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
     var token = (0,_vueuse_core__WEBPACK_IMPORTED_MODULE_3__.useLocalStorage)('token', '');
+    var user = (0,_vueuse_core__WEBPACK_IMPORTED_MODULE_3__.useLocalStorage)('user', '');
     var errors = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)({});
     var authError = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
     var errTime = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
@@ -17113,6 +17114,7 @@ function _readOnlyError(name) { throw new TypeError("\"" + name + "\" is read-on
         password: password.value
       }).then(function (res) {
         token.value = 'Bearer ' + res.data.access_token;
+        user.value = JSON.stringify(res.data.user);
         window.location.href = "/admin";
         toast.success("loggin successfully", {
           timeout: 2000
@@ -17126,7 +17128,7 @@ function _readOnlyError(name) { throw new TypeError("\"" + name + "\" is read-on
           authError.value = err.response.data.message;
           errors.value = {};
         } else {
-          toast.success("Something went Wrong!!", {
+          toast.error("Something went Wrong!!", {
             timeout: 2000
           });
         }
@@ -17201,6 +17203,7 @@ function _readOnlyError(name) { throw new TypeError("\"" + name + "\" is read-on
       password: password,
       isLogin: isLogin,
       token: token,
+      user: user,
       errors: errors,
       authError: authError,
       errTime: errTime,
@@ -17794,6 +17797,8 @@ var useBackendStore = (0,pinia__WEBPACK_IMPORTED_MODULE_1__.defineStore)('useBac
   var colleges = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)({});
   var admissionTypes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)({});
   var studyLevels = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)({});
+  var years = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)({});
+  var userRole = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
   function getDepartment() {
     axios__WEBPACK_IMPORTED_MODULE_3__["default"].get('api/all-departments').then(function (res) {
       departments.value = res.data;
@@ -17830,15 +17835,31 @@ var useBackendStore = (0,pinia__WEBPACK_IMPORTED_MODULE_1__.defineStore)('useBac
       console.log(err);
     });
   }
+  function getYear() {
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].get('api/years').then(function (res) {
+      years.value = res.data;
+    })["catch"](function (err) {
+      console.log(err);
+    });
+  }
+  function getUserRole() {
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].defaults.headers.common['Authorization'] = token.value;
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].get('/api/getUserRole').then(function (res) {
+      userRole.value = res.data;
+    });
+  }
   (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-    getDepartment(), getRole(), getCollege(), getAdmissionTypes(), getStudyLevels();
+    getDepartment(), getRole(), getCollege(), getAdmissionTypes(), getStudyLevels(), getYear();
+    getUserRole();
   });
   return {
     departments: departments,
     roles: roles,
     colleges: colleges,
     admissionTypes: admissionTypes,
-    studyLevels: studyLevels
+    studyLevels: studyLevels,
+    years: years,
+    userRole: userRole
   };
 });
 

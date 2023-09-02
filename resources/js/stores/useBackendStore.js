@@ -9,6 +9,8 @@ export const useBackendStore = defineStore('useBackendStore',()=>{
    const colleges = ref({})
    const admissionTypes = ref({})
    const studyLevels = ref({})
+   const years = ref({})
+   const userRole = ref('')
     function getDepartment(){
         axios.get('api/all-departments')
         .then(res=>{
@@ -50,20 +52,39 @@ export const useBackendStore = defineStore('useBackendStore',()=>{
             console.log(err);
         })
     }
+    function getYear(){
+        axios.get('api/years')
+        .then(res=>{
+            years.value = res.data;
+        }).catch(err=>{
+            console.log(err);
+        })
+    }
+    function getUserRole(){
+        axios.defaults.headers.common['Authorization'] = token.value;
+        axios.get('/api/getUserRole')
+        .then(res=>{
+            userRole.value = res.data
+        })
+    }
  
  onMounted(()=>{
     getDepartment(),
     getRole(),
     getCollege(),
     getAdmissionTypes(),
-    getStudyLevels()
+    getStudyLevels(),
+    getYear()
+    getUserRole()
  })
     return {
         departments,
         roles,
         colleges,
         admissionTypes,
-        studyLevels
+        studyLevels,
+        years,
+        userRole
     } 
     
 });

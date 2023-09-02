@@ -308,8 +308,7 @@ function showData(id){
 											<td>{{ role.name }}</td>
 											<td>{{ format(new Date(role.created_at), 'MMMM do, yyyy') }}</td>
 											<td>{{ format(new Date(role.updated_at), 'MMMM do, yyyy') }}</td>
-                                            
-											<td>
+                                            <td>
 												<div class="btn-group" role="group"
 													aria-label="Button group with nested dropdown">
 													<button type="button" class="btn btn-primary">Actions</button>

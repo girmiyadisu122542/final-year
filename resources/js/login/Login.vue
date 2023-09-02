@@ -8,6 +8,7 @@ const username = ref('');
 const password = ref('');
 const isLogin = ref(false);
 const token = useLocalStorage('token', '');
+const user = useLocalStorage('user','');
 const errors = ref({});
 const authError = ref('');
 const errTime = ref(false);
@@ -36,7 +37,9 @@ function login() {
         email: username.value,
         password: password.value
     }).then(res => {
+        
         token.value = 'Bearer ' + res.data.access_token;
+        user.value = JSON.stringify(res.data.user) ;
         window.location.href = "/admin"
         toast.success("loggin successfully", {
             timeout: 2000
@@ -52,7 +55,7 @@ function login() {
             authError.value = err.response.data.message;
             errors.value = {};
         } else {
-            toast.success("Something went Wrong!!", {
+            toast.error("Something went Wrong!!", {
                 timeout: 2000
             })
         }

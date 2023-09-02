@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{{asset('backend/assets/css/dark-theme.css')}}" />
     <link rel="stylesheet" href="{{asset('backend/assets/css/semi-dark.css')}}" />
     <link rel="stylesheet" href="{{asset('backend/assets/css/header-colors.css')}}" />
-    <title>Rukada - Responsive Bootstrap 5 Admin Template</title>
+    <title>Wollo University Project Repository</title>
 </head>
 
 <body>
@@ -43,19 +43,19 @@
     <script src="{{asset('backend/assets/plugins/metismenu/js/metisMenu.min.js')}}"></script>
     <script src="{{asset('backend/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js')}}"></script>
     <script src="{{asset('backend/assets/plugins/chartjs/chart.min.js')}}"></script>
-    <!-- <script src="{{asset('backend/assets/plugins/vectormap/jquery-jvectormap-2.0.2.min.js')}}"></script>
+    <script src="{{asset('backend/assets/plugins/vectormap/jquery-jvectormap-2.0.2.min.js')}}"></script>
     <script src="{{asset('backend/assets/plugins/vectormap/jquery-jvectormap-world-mill-en.js')}}"></script>
     <script src="{{asset('backend/assets/plugins/jquery.easy-pie-chart/jquery.easypiechart.min.js')}}"></script>
-    <script src="{{asset('backend/assets/plugins/sparkline-charts/jquery.sparkline.min.js')}}"></script> -->
-    <!-- <script src="{{asset('backend/assets/plugins/jquery-knob/excanvas.js')}}"></script> -->
-    <!-- <script src="{{asset('backend/assets/plugins/jquery-knob/jquery.knob.js')}}"></script>
+    <!-- <script src="{{asset('backend/assets/plugins/sparkline-charts/jquery.sparkline.min.js')}}"></script> 
+    <script src="{{asset('backend/assets/plugins/jquery-knob/excanvas.js')}}"></script> 
+     <script src="{{asset('backend/assets/plugins/jquery-knob/jquery.knob.js')}}"></script>
     <script>
         $(function() {
             $(".knob").knob();
         });
     </script> -->
     <!-- <script src="{{asset('backend/assets/js/index.js')}}"></script> -->
-    <!--app JS-->
+   <!-- app JS -->
     <script src="{{asset('backend/assets/js/app.js')}}"></script>
 </body>
 

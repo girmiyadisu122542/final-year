@@ -182,7 +182,7 @@ onMounted(() => {
 
 function resetState() {
 	
-     	   full_name.value ='',
+     	    full_name.value ='',
 			department.value = '',
 			role.value = '',
 			email.value = ''
@@ -280,7 +280,7 @@ function showUser(id){
 						<div class="text-danger" v-if="errors.role && errTime == true"> *{{ errors.role[0] }}</div>
 
 					</div>
-					<div class="col-md-6" v-if="role!=1">
+					<div class="col-md-6" v-if="role!=1 && role!=12 && role!=14">
 						<label for="validationCustom03" class="form-label">Department</label>
 						<select v-model="department" id="inputState "
 							class="form-select  border-primary text-primary">

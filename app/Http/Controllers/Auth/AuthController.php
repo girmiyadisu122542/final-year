@@ -26,10 +26,10 @@ class AuthController extends Controller
        }
         $user = $request->user();
         $tokenData = $user->createToken($request->email);
-        
         //$token = $tokenData->token;
         return response()->json([
         'access_token' => $tokenData->accessToken,
+        'user' => $user
         ]);   
    }
 

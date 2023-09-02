@@ -4,7 +4,6 @@ import Back from './Back.vue'
 import router from './router'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
-
 const options ={
     transition: "Vue-Toastification__bounce",
     maxToasts: 5,

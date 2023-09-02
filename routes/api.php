@@ -1,15 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Back\Accadamics\AdmissionTypeController;
-use App\Http\Controllers\Back\Accadamics\CollegeController;
-use App\Http\Controllers\Back\Accadamics\DepartmentController;
-use App\Http\Controllers\Back\Accadamics\StudyLevelController;
-use App\Http\Controllers\Back\Accadamics\YearController;
-use App\Http\Controllers\Back\DeptHeadController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Back\StudentController;
+use App\Http\Controllers\Back\Accadamics\YearController;
+use App\Http\Controllers\Back\Accadamics\CollegeController;
+use App\Http\Controllers\Back\ProjectCoordinatorController;
+use App\Http\Controllers\Back\Accadamics\DepartmentController;
+use App\Http\Controllers\Back\Accadamics\StudyLevelController;
+use App\Http\Controllers\Back\Accadamics\AdmissionTypeController;
+use App\Http\Controllers\Back\AdvisorController;
+use App\Http\Controllers\Back\DepartmentHeadController;
+use App\Http\Controllers\Back\ResearcherController;
+use App\Http\Controllers\Back\ResearchOfficeController;
 
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/register',[AuthController::class,'register']);
@@ -24,6 +29,9 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/active-user/{id}' ,[UserController::class, 'changeStatus']);
     Route::get('/get-user/{id}' ,[UserController::class, 'showUser']);
     Route::post('/update-user/{id}',[UserController::class,'updateUser']);
+
+    Route::get('/getUserRole' ,[UserController::class, 'getUserRole']);
+
     // role contoller
     Route::get('/roles' ,[RoleController::class, 'index']);
     Route::post('/add-role',[RoleController::class,'addRole']);
@@ -57,11 +65,69 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/get-year/{id}' ,[YearController::class, 'showYear']);
     Route::post('/update-year/{id}',[YearController::class,'updateYear']);
     
-    //department head
-    Route::get('/advisors' ,[DeptHeadController::class, 'getAdvisor']);
-    Route::post('/add-advisor',[DeptHeadController::class,'addAdvisor']);
-    Route::post('/update-advisor/{id}',[DeptHeadController::class,'updateAdvisor']);
-    Route::get('/students' ,[DeptHeadController::class, 'getStudents']);
+    //department head 
+    Route::get('/project_coordinators' ,[DepartmentHeadController::class, 'getProjectCoordinator']);
+    Route::post('/add-project_coordinator',[DepartmentHeadController::class,'addProjectCoordinator']);
+    Route::post('/update-project_coordinator/{id}',[DepartmentHeadController::class,'updateProjectCoordinator']);
+    Route::get('/students' ,[DepartmentHeadController::class, 'getStudents']);
+    Route::get('/get-student-document-deptHead' ,[DepartmentHeadController::class, 'getDocuments']);
+    Route::post('/comment-on-document-deptHead' ,[DepartmentHeadController::class, 'addComment']);
+    Route::get('/approve-document-deptHead/{id}' ,[DepartmentHeadController::class, 'approveDocument']);
+    Route::get('/get-single-document-comment-deptHead/{id}' ,[DepartmentHeadController::class, 'getSingleDocumentComment']);
+    Route::post('/update-comment-deptHead/{id}' ,[DepartmentHeadController::class, 'updateComment']);
+    
+    
+    //project coodinator 
+    Route::get('/advisors' ,[ProjectCoordinatorController::class, 'getAdvisor']);
+    Route::post('/add-advisor',[ProjectCoordinatorController::class,'addAdvisor']);
+    Route::post('/update-advisor/{id}',[ProjectCoordinatorController::class,'updateAdvisor']);
+    Route::get('/get-student-document-proCoor' ,[ProjectCoordinatorController::class, 'getDocuments']);
+    Route::post('/comment-on-document-proCoor' ,[ProjectCoordinatorController::class, 'addComment']);
+    Route::get('/approve-document-proCoor/{id}' ,[ProjectCoordinatorController::class, 'approveDocument']);
+    Route::get('/get-single-document-comment-proCoor/{id}' ,[ProjectCoordinatorController::class, 'getSingleDocumentComment']);
+    Route::post('/update-comment-proCoor/{id}' ,[ProjectCoordinatorController::class, 'updateComment']);
+
+
+
+     // advisor
+     Route::get('/get-student-document' ,[AdvisorController::class, 'getDocument']);
+     Route::post('/comment-on-document' ,[AdvisorController::class, 'addComment']);
+     Route::get('/approve-document-advisor/{id}' ,[AdvisorController::class, 'approveDocument']);
+     Route::get('/get-single-document-comment/{id}' ,[AdvisorController::class, 'getSingleDocumentComment']);
+     Route::get('/show-comment/{id}' ,[AdvisorController::class, 'showComment']);
+     Route::get('/delete-comment/{id}' ,[AdvisorController::class, 'deleteComment']);
+     Route::post('/update-comment/{id}' ,[AdvisorController::class, 'updateComment']);
+     
+     
+     // student 
+     Route::get('/get-document' ,[StudentController::class, 'getDocument']);
+     Route::get('/get-advisor' ,[StudentController::class, 'getAdvisor']);
+     Route::post('/upload-document',[StudentController::class, 'uploadDocument']);
+     Route::get('/show-document/{id}' ,[StudentController::class, 'showDocument']);
+    Route::post('/update-document/{id}' ,[StudentController::class, 'updateDocument']);
+    Route::get('/delete-document/{id}' ,[StudentController::class, 'deleteDocument']);
+    Route::get('/view-document-comment/{id}' ,[StudentController::class, 'getSingleDocumentComment']);
+    
+    // research office 
+    Route::get('/researchers' ,[ResearchOfficeController::class, 'getResearchers']);
+    Route::get('/announcements' ,[ResearchOfficeController::class, 'getAnnouncements']);
+    Route::post('/add-announcement' ,[ResearchOfficeController::class, 'addAnnouncement']);
+    Route::get('/delete-announcment/{id}' ,[ResearchOfficeController::class, 'deleteAnnouncement']);
+    Route::get('/show-announcment/{id}' ,[ResearchOfficeController::class, 'showAnnouncment']);
+    Route::post('/update-announcement/{id}' ,[ResearchOfficeController::class, 'updateAnnouncment']);
+    Route::get('/active-announcement/{id}' ,[ResearchOfficeController::class, 'changeStatus']);
+    Route::get('/get-researcher-document' ,[ResearchOfficeController::class, 'getDocuments']);
+    Route::get('/approve-document-researchOffice/{id}' ,[ResearchOfficeController::class, 'approveDocument']);
+    Route::get('/get-researcher-proposal' ,[ResearchOfficeController::class, 'getProposals']);
+    Route::get('/approve-proposal/{id}' ,[ResearchOfficeController::class, 'approveProposals']);
+    
+    // researcher
+    Route::post('/upload-document-researcher',[ResearcherController::class, 'uploadDocument']);
+    Route::get('/get-document-researcher' ,[ResearcherController::class, 'getDocument']);
+    Route::post('/update-document-researcher/{id}' ,[ResearcherController::class, 'updateDocument']);
+    
+    
+
 });
 
 

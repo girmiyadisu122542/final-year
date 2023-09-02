@@ -1,10 +1,17 @@
 <script setup>
-import { useLocalStorage } from "@vueuse/core";
+import { tryOnMounted, useLocalStorage } from "@vueuse/core";
 import { useToast } from "vue-toastification"; 
+import {ref } from 'vue';
 import Swal from "sweetalert2";
 import axios from "axios";
- const token = useLocalStorage('token','');
+ const token = useLocalStorage('token');
+ const user = useLocalStorage('user');
  const toast = useToast();
+ import Auth from '../../Auth'
+const userData = ref('')
+userData.value = Auth.user
+const user_role =ref('')
+   
 function logout(){
     Swal.fire({
   title: 'Are you sure?',
@@ -21,17 +28,31 @@ function logout(){
       axios.post('api/logout')
       .then(()=>{
           token.value= "";
+          user.value = ""
+
           toast.success("successfully Logged out!!",{
                 timeout:2000
             })
-         window.location.href="/login";   
+         window.location.href="/";   
       }).catch(err=>{
-          console.log(err)
+        toast.error("Something Went wrong",{
+                timeout:2000
+            })
       })
   }
 })
 }
+tryOnMounted(()=>{
+ let role_id = userData.value.role_id
+axios.defaults.headers.common['Authorization'] = token.value
+axios.get('api/get-role/'+role_id)
+   .then(res=>{
+    user_role.value = res.data[0].name
+   }).catch(err=>{
+    console.log(err)
+   })
 
+})
 </script>
 
 <template>
@@ -181,8 +202,9 @@ function logout(){
                         role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <img :src="'backend/assets/images/avatars/avatar-2.png'" class="user-img" alt="user avatar" />
                         <div class="user-info ps-3">
-                            <p class="user-name mb-0">Pauline Seitz</p>
-                            <p class="designattion mb-0">Web Designer</p>
+                            <p class="user-name mb-0">{{userData.full_name}}</p>
+                            <p class="designattion mb-0">{{userData.email}}</p>
+                            <p class="designattion mb-0 ">{{user_role}}</p>
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">

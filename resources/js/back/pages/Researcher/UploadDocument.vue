@@ -5,25 +5,33 @@ import { useLocalStorage } from '@vueuse/core';
 import { format } from 'date-fns'
 import Swal from "sweetalert2";
 import { useToast } from 'vue-toastification';
+import { useBackendStore } from '../../../stores/useBackendStore'
+
 const toast = useToast();
 const token = useLocalStorage('token')
-const users = ref([]);
+const documents = ref([]);
 const isLoading = ref(false)
 const isHide = ref(false)
+const isEdit = ref(false)
 const isSubmit = ref(false)
 const errors = ref({});
 const errTime = ref(false);
-const full_name = ref('');
-const email = ref('');
-const isEdit = ref(false)
-const userId= ref('');
-
+const path = ref(null);
+const author = ref('');
+const cover_page = ref(null)
+const abstract= ref('');
+const size = ref('');
+const title = ref('');
+const page_number= ref('');
+const accadamic_year = ref('');
+const userId =ref('');
+const back = useBackendStore();
 function loadData() {
 	isLoading.value = true
 	axios.defaults.headers.common['Authorization'] = token.value
-	axios.get('api/advisors')
+	axios.get('api/get-document-researcher')
 		.then(res => {
-			users.value = res.data
+			documents.value = res.data
 			setTimeout(() => {
 				isLoading.value = false
 			}, 500);
@@ -49,12 +57,12 @@ function deleteData(id) {
 		if (result.isConfirmed) {
 
 			axios.defaults.headers.common['Authorization'] = token.value;
-			axios.get('api/delete-user/' + id)
+			axios.get('api/delete-document/' + id)
 				.then(() => {
-					users.value = users.value.filter(user => {
-						return user.id != id;
+					documents.value = documents.value.filter(document => {
+						return document.id != id;
 					})
-					toast.info("User Successfully Deleted", {
+					toast.info("Data Successfully Deleted", {
 						timeout: 2000
 					})
 				}).catch(err => {
@@ -67,17 +75,28 @@ function deleteData(id) {
 
 
 }
-function addUser() {
+function addData() {
 	if (isSubmit.value == true) return;
 	isSubmit.value = true
 	axios.defaults.headers.common['Authorization'] = token.value
-	axios.post('api/add-advisor', {
-		'full_name': full_name.value,
-		'email': email.value,
+	let formdata = new FormData();
+	formdata.append("document",path.value);
+	formdata.append("author",author.value);
+	formdata.append("cover_page",cover_page.value);
+	formdata.append("abstract",abstract.value);
+	formdata.append("size",size.value);
+	formdata.append("title",title.value);
+	formdata.append("page_number",page_number.value);
+	formdata.append("accadamic_year",accadamic_year.value);
+
+	axios.post('api/upload-document-researcher',formdata, {
+		headers: {
+               'Content-Type': 'multipart/form-data',
+             },
 	}).then(() => {
 			isHide.value = false
 			loadData();
-			toast.success("Advisor Successfully Added!!", {
+			toast.success("Document uploaded successfully!!", {
 				timeout: 2000
 			})
 		}).catch(err => {
@@ -85,7 +104,7 @@ function addUser() {
 			if (err.response.status === 422) {
 				errors.value = err.response.data.errors;
 			} else {
-				toast.error("Somethig Went Wrong!!!", {
+				toast.error("Something Went Wrong!!!", {
 					timeout: 2000
 				})
 			}
@@ -101,49 +120,39 @@ function addUser() {
 			}, 3000)
 		})
 }
-function activeUser(id) {
-	Swal.fire({
-		title: 'Are you sure?',
-		text: "You Want to Change User Status!!",
-		icon: 'warning',
-		showCancelButton: true,
-		confirmButtonColor: '#3085d6',
-		cancelButtonColor: '#d33',
-		confirmButtonText: 'Yes'
-	}).then((result) => {
-		if (result.isConfirmed) {
 
-			axios.defaults.headers.common['Authorization'] = token.value;
-			axios.get('api/active-user/' + id)
-				.then(() => {
-					loadData();
-					toast.success("User Status Changed!", {
-						timeout: 2000
-					})
-
-				}).catch(err => {
-					toast.error("You cann't change User Status", {
-						timeout: 2000
-					})
-				})
-		}
-	})
-
+ 
+function onDocumentSelected(e){
+path.value = e.target.files[0];
+size.value = e.target.files[0].size
+}
+function onCoverPageSelected(e){
+	cover_page.value = e.target.files[0];
 }
 
-function editUser(){
+function editData(){
 	if (isSubmit.value == true) return;
 	axios.defaults.headers.common['Authorization'] = token.value
 	isSubmit.value = true
-	axios.post('api/update-advisor/'+userId.value, {
-		'full_name': full_name.value,
-		'email': email.value,
+	let formdata = new FormData();
+	formdata.append("document",path.value);
+	formdata.append("author",author.value);
+	formdata.append("cover_page",cover_page.value);
+	formdata.append("abstract",abstract.value);
+	formdata.append("size",size.value);
+	formdata.append("title",title.value);
+	formdata.append("page_number",page_number.value);
+	formdata.append("accadamic_year",accadamic_year.value);
+	axios.post('api/update-document-researcher/'+userId.value,formdata, {
+		headers: {
+               'Content-Type': 'multipart/form-data',
+             },
 		}).then(() => {
 			isHide.value = false
 			isEdit.value = false
 			resetState();
 			loadData();
-			toast.success("User Successfully Updated!!", {
+			toast.success("Data Successfully Updated!!", {
 				timeout: 2000
 			})
 		}).catch(err => {
@@ -169,12 +178,19 @@ function editUser(){
 
 onMounted(() => {
 	loadData();
+	
 })
 
 function resetState() {
 	
-     	   full_name.value ='',
-		   email.value = ''
+     	   path.value =null,
+		   author.value = ''
+     	   cover_page.value =null,
+     	   abstract.value ='',
+		   size.value = ''
+		   title.value = ''
+     	   page_number.value ='',
+		   accadamic_year.value = ''
 			
 		}
 		
@@ -185,17 +201,23 @@ function resetState() {
 	}
 })
 
-function showUser(id){
+function showData(id){
 
 	axios.defaults.headers.common['Authorization'] = token.value
-	axios.get('api/get-user/'+id)
+	axios.get('api/show-document/'+id)
 	.then(res=>{
 		isHide.value = true
 		isEdit.value = true
 		userId.value = id
 		//console.log(res.data[0].full_name)
-		full_name.value = res.data[0].full_name,
-		email.value = res.data[0].email
+		path.value = res.data[0].path,
+		author.value = res.data[0].author,
+		cover_page.value = res.data[0].cover_page,
+		abstract.value = res.data[0].abstract,
+		size.value = res.data[0].size,
+		title.value = res.data[0].title,
+		page_number.value = res.data[0].page_number,
+		accadamic_year.value = res.data[0].year_id
 	
 	}).catch(err=>{
 		console.log(err)
@@ -204,12 +226,14 @@ function showUser(id){
 				})
 	})
 }
+
+
 </script>
 <template>
 	<div class="page-content">
 		<!--breadcrumb-->
 		<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-2">
-			<div class="breadcrumb-title pe-3">Advisor</div>
+			<div class="breadcrumb-title pe-3">Documents</div>
 			<div class="ps-3">
 				<nav aria-label="breadcrumb">
 					<ol class="breadcrumb mb-0 p-0">
@@ -217,7 +241,7 @@ function showUser(id){
 							<a href="javascript:;"><i class="bx bx-home-alt"></i></a>
 						</li>
 						<li class="breadcrumb-item active" aria-current="page">
-							List of Advisors
+							List of Documents
 						</li>
 
 					</ol>
@@ -233,30 +257,78 @@ function showUser(id){
 				<div class="card-title d-flex align-items-center">
 					<div><i class="bx bxs-user me-1 font-22 text-primary"></i>
 					</div>
-					<h5 class="mb-0 text-primary">Advisor Registration</h5>
+					<h5 class="mb-0 text-primary">Document Upload </h5>
 				</div>
 				<hr>
-				<form class="row g-3 ">
+				<form class="row g-3 " enctype="multipart/form-data">
 					<div class="col-md-6">
-						<label for="validationCustom01" class="form-label">Full Name</label>
-						<input v-model="full_name" type="text" class="form-control border-primary" id="validationCustom01"
-							placeholder="Enter full name">
-						<div class="text-danger" v-if="errors.full_name && errTime == true">*{{ errors.full_name[0] }} </div>
+						<label for="validationCustom01" class="form-label">Document</label>
+						<input @change="onDocumentSelected"  type="file" class="form-control border-primary" 
+							placeholder="select document">
+						<div class="text-danger" v-if="errors.document && errTime == true">*{{ errors.document[0] }} </div>
 					</div>
 
 					<div class="col-md-6">
-						<label for="validationCustomUsername" class="form-label">Email</label>
-						<div class="input-group has-validation"> <span class="input-group-text"
-								id="inputGroupPrepend">@</span>
-							<input v-model="email" type="email" class="form-control border-primary"
-								placeholder="Enter User Email">
+						<label for="validationCustomUsername" class="form-label">Title</label>
+						<div class="input-group has-validation"> 
+							<input v-model="title" type="text" class="form-control border-primary"
+								placeholder="Enter title ">
 
 						</div>
-						<div class="text-danger" v-if="errors.email && errTime == true">* {{ errors.email[0] }}</div>
+						<div class="text-danger" v-if="errors.title && errTime == true">* {{ errors.title[0] }}</div>
 					</div>
+					<div class="col-md-6">
+						<label for="validationCustomUsername" class="form-label">Author</label>
+						<div class="input-group has-validation"> 
+							<input v-model="author" type="text" class="form-control border-primary"
+								placeholder="Author name">
+
+						</div>
+						<div class="text-danger" v-if="errors.author && errTime == true">* {{ errors.author[0] }}</div>
+					</div>
+					<div class="col-md-6">
+						<label for="validationCustomUsername" class="form-label">Cover Page</label>
+						<div class="input-group has-validation"> 
+							<input @change="onCoverPageSelected"  type="file" class="form-control border-primary"
+								>
+
+						</div>
+						<div class="text-danger" v-if="errors.cover_page && errTime == true">* {{ errors.cover_page[0] }}</div>
+					</div>
+					
+				
+					<div class="col-md-12">
+						<label for="validationCustomUsername" class="form-label">Abstract</label>
+						<div class="input-group has-validation">
+							<textarea v-model="abstract" class="form-control border-primary " cols="50" rows="5"></textarea> 
+							
+						</div>
+						<div class="text-danger" v-if="errors.abstract && errTime == true">* {{ errors.abstract[0] }}</div>
+					</div>
+					<div class="col-md-6">
+						<label for="validationCustomUsername" class="form-label">Page Number</label>
+						<div class="input-group has-validation"> 
+							<input v-model="page_number" type="number" class="form-control border-primary"
+								placeholder="Enter page number">
+
+						</div>
+						<div class="text-danger" v-if="errors.page_number && errTime == true">* {{ errors.page_number[0] }}</div>
+					</div>
+					<div class="col-md-6" >
+						<label for="validationCustom03" class="form-label">Accadamic Year</label>
+						<select v-model="accadamic_year" id="inputState "
+							class="form-select  border-primary text-primary">
+							<i class="lni lni-funnel"></i>
+							<option selected="" disabled="" value="">select year</option>
+							<option v-for="year in back.years" :value="year.id">{{ year.name }}</option>
+
+						</select>
+						<div class="text-danger" v-if="errors.accadamic_year && errTime == true">* {{ errors.accadamic_year[0] }}</div>
+					</div>
+				
 					 <div class="col-12">
-						<button :disabled="isSubmit" @click.prevent="isEdit?editUser():addUser()" class="btn btn-primary"
-							type="submit"><i :class="isEdit?'fadeIn animated bx bx-edit-alt':'fadeIn animated bx bx-plus-circle'"></i><span v-if="isSubmit" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>{{ isSubmit ? 'Loading...' : isEdit? 'Update'  :'Add' }}</button>
+						<button :disabled="isSubmit" @click.prevent="isEdit?editData():addData()" class="btn btn-primary"
+							type="submit"><i v-if="!isSubmit"  :class="isEdit?'fadeIn animated bx bx-edit-alt':'fadeIn animated bx bx-plus-circle'"></i><span v-if="isSubmit" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>{{ isSubmit ? 'Loading...' : isEdit? 'Update'  :'Add' }}</button>
 						<button class="btn  btn-danger" @click.prevent="resetState()"><i class="fadeIn animated bx bx-trash-alt"></i>Clear</button>	
 					</div>
 				</form>
@@ -324,12 +396,14 @@ function showUser(id){
 								<thead>
 									<tr role="row">
 										<th>#</th>
-										<th>Full Name</th>
-										<th>Email</th>
-										<th>Department</th>
-										<th>Code</th>
+										<th></th>
+										<th>Title</th>
+										<th>Abstract</th>
+										<th>Uploader</th>
+										<th>Author</th>
+										 <th>Year</th>
+										<th>Updated At</th>
 										<th>Status</th>
-										<th>CreatedAt</th>
 										<th width="5%">Actions</th>
 									</tr>
 								</thead>
@@ -345,18 +419,20 @@ function showUser(id){
 
 								</template>
 								<template v-else>
-									<tbody v-if="users.length!=0">
-										<tr role="row" v-for="(user, index) in users" :key="user.index">
+									<tbody v-if="documents.length!=0">
+										<tr role="row" v-for="(document, index) in documents" :key="document.index">
 											<td>{{ index + 1 }}</td>
-											<td>{{ user.full_name.toUpperCase() }}</td>
-											<td>{{ user.email }}</td>
-											<td v-if="user.department_id">{{ user.department.name }}</td>
-											<td v-else><span class="badge bg-light text-dark">No</span></td>
-											<td>{{ user.code }}</td>
-											<td><span :class="user.status == 0 ? 'badge bg-danger' : 'badge bg-success'">{{
-												user.status == 0 ? 'Deactive' : 'Active' }}</span></td>
-
-											<td>{{ format(new Date(user.created_at), 'MMMM do, yyyy') }}</td>
+											<td v-if="document.cover_page"><img :src="document.cover_page" style="height: 70px;width: 100px;" alt="No Image"></td>
+											<td v-else><img style="height: 70px;width: 100px;" :src="'/document/no_image.jpg'" alt="no_image"></td>
+											<!-- <td>{{ document.cover_page }}</td> -->
+											<td>{{ document.title.toUpperCase() }}</td>
+											<td>{{ document.abstract }}</td>
+											<td>{{ document.user.full_name }}</td>
+											<td>{{ document.author }}</td>
+											<td>{{ document.year.name }}</td>
+											<td>{{ format(new Date(document.updated_at), 'MMMM do, yyyy') }}</td>
+											<td><span :class="document.status == 0 ? 'badge bg-danger' : document.status == 1? 'badge bg-success':'badge bg-danger'">{{
+												document.status == 0 ? 'Pending...' :document.status == 1 ? 'Approved':'Rejected' }}</span></td>
 
 											<td>
 												<div class="btn-group" role="group"
@@ -369,19 +445,22 @@ function showUser(id){
 															<i class="bx bx-chevron-down"></i>
 														</button>
 														<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
-															<li><button @click.prevent="showUser(user.id)" class="btn btn-outline-info dropdown-item "><i
+															<li><button @click.prevent="showData(document.id)" class="btn btn-outline-info dropdown-item "><i
 																		class="fadeIn animated bx bx-edit"></i>Edit</button>
 															</li>
-															<li><button @click.prevent="deleteData(user.id)"
+															<li>
+																<RouterLink :to="{name:'ViewCommentStudent',params:{id:document.id}}" class="btn btn-outline-primary dropdown-item">
+																	<i class="lni lni-eye"></i> View Comment
+																</RouterLink>
+															</li>
+															<li ><button  @click.prevent=""
+																	class="btn btn-outline-primary dropdown-item"><i class="lni lni-eye"></i>View</button>
+															</li>
+															<li v-if="document.status == 0"><button  @click.prevent="deleteData(document.id)"
 																	class="btn btn-outline-danger dropdown-item"><i
 																		class="fadeIn animated bx bx-trash"></i>Delete</button>
 															</li>
-															<li><button @click.prevent="activeUser(user.id)"
-																	class="btn btn-outline-primary dropdown-item"><i
-																		:class="user.status == 0 ? 'fadeIn animated bx bx-user-plus' : 'fadeIn animated bx bx-user-minus'"></i>{{
-																			user.status == 0 ? 'Active' : 'Deactive' }}</button>
-															</li>
-
+															
 														</ul>
 													</div>
 												</div>

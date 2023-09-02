@@ -177,7 +177,10 @@ function showData(id){
 		isEdit.value = true
 		dataId.value = id
 		name.value = res.data[0].name
-		
+		college.value =res.data[0].college_id
+		admssion_type.value = res.data[0].admission_type_id
+		studyLevel.value = res.data[0].study_level_id
+		duration.value = res.data[0].duration
 	
 	}).catch(err=>{
 		console.log(err)
