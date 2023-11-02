@@ -37,11 +37,11 @@ function login() {
         email: username.value,
         password: password.value
     }).then(res => {
-        
+         
         token.value = 'Bearer ' + res.data.access_token;
         user.value = JSON.stringify(res.data.user) ;
         window.location.href = "/admin"
-        toast.success("loggin successfully", {
+        toast.success("logged in successfully", {
             timeout: 2000
         })
 
@@ -147,9 +147,9 @@ onMounted(() => {
         <header class="login-header shadow">
             <nav class="navbar navbar-expand-lg navbar-light bg-white rounded fixed-top rounded-0 shadow-sm">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="/">
-                        <img :src="'backend/assets/images/logo-img.png'" width="140" alt="" />
-                    </a>
+                    <RouterLink to="/" class="navbar-brand">
+                        <img :src="'static_image/title.jfif'" width="50" height="50" alt="" />
+                    </RouterLink>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent1" aria-controls="navbarSupportedContent1"
                         aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span>

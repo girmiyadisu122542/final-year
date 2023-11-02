@@ -88,7 +88,21 @@ function showData(id){
 				})
 	})
 }
-
+function downloadComment(id,file){
+	this.axios({
+                url: '/api/download-comment/' + id,
+                method: 'GET',
+                responseType: 'arraybuffer',
+            }).then((response) => {
+                let blob = new Blob([response.data], {
+                    type: 'application/pdf'
+                })
+                let link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = file
+                link.click()
+            });
+        }
 
 </script>
 <template>
@@ -221,11 +235,13 @@ function showData(id){
 									<tbody v-if="comments.length!=0">
 										<tr role="row" v-for="(comment, index) in comments" :key="comment.index">
 											<td>{{ index + 1 }}</td>
-											<td>{{ comment.document.cover_page }}</td>
+											<td v-if="comment.document.cover_page"><img :src="comment.document.cover_page" style="height: 70px;width: 100px;" alt="No Image"></td>
 											<td>{{ comment.document.title.toUpperCase() }}</td>
 											<td>{{ comment.comment }}</td>
 											<td>{{ comment.user.full_name  }} <br> <span><i><small class="text-info">{{comment.role.name}}</small></i></span></td>
-											<td v-if="comment.attached_file != null">{{ comment.attached_file }}</td>
+											<td v-if="comment.attached_file != null"> 
+												<i @click.prevent="downloadComment(comment.id,comment.attached_file)" class="lni lni-download">download</i>
+										 </td>
 											<td v-else><span><i><small class="text-secondary">No file</small></i></span></td>
 											<td>{{ format(new Date(comment.created_at), 'MMMM do, yyyy') }}</td>
 											<td>{{ format(new Date(comment.updated_at), 'MMMM do, yyyy') }}</td>

@@ -122,7 +122,7 @@ class ResearchOfficeController extends Controller
             $document->status =1;
         }else{
 
-            ($document->status == 1) ? $document->status = 2 : $document->status = 1;
+            ($document->status == 1) ? $document->status = 4 : $document->status = 1;
         }
         if ($document->save()) {
             return response()->json([
@@ -154,5 +154,11 @@ class ResearchOfficeController extends Controller
                 'message' => 'Something wrong happen please try again!',
             ], 500);
         }
+    }
+
+    public function downloadProposal($id){
+        $proposal = Proposal::where('id', $id)->first();
+        $file_path = $proposal->file_attached;
+        return response()->download(public_path($file_path));
     }
 }

@@ -65,7 +65,21 @@ onMounted(() => {
     loadData();
 })
 
-
+function downloadComment(id,file){
+	this.axios({
+                url: '/api/download-proposal/' + id,
+                method: 'GET',
+                responseType: 'arraybuffer',
+            }).then((response) => {
+                let blob = new Blob([response.data], {
+                    type: 'application/pdf'
+                })
+                let link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = file
+                link.click()
+            });
+        }
 
 
 
@@ -178,7 +192,10 @@ onMounted(() => {
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ proposal.announcement.title.toUpperCase() }}</td>
                                             <td>{{ proposal.user.full_name }}</td>
-                                            <td>{{ proposal.file_attached }}</td>
+                                            <td v-if="proposal.file_attached != null"> 
+												<i @click.prevent="downloadComment(proposal.id,proposal.file_attached)" class="lni lni-download">download</i>
+										 </td>
+											<td v-else><span><i><small class="text-secondary">No file</small></i></span></td>
                                             <td>{{ format(new Date(proposal.created_at), 'MMMM do, yyyy') }}</td>
                                             <td>{{ format(new Date(proposal.updated_at), 'MMMM do, yyyy') }}</td>
                                             <td><span
@@ -206,7 +223,7 @@ onMounted(() => {
                                                                     @click.prevent="approveDocument(proposal.id)"
                                                                     class="btn btn-outline-danger dropdown-item"><i
                                                                         :class="proposal.status == 2 ? 'fadeIn animated bx bx-plus' : 'fadeIn animated bx bx-minus'"></i>{{
-                                                                            proposal.status == 2 ? 'Approve' : 'Reject' }}</button>
+                                                                            proposal.status == 2 ? 'Approve':proposal.status == 1?'Reject' : 'Approve' }}</button>
                                                             </li>
 
                                                         </ul>

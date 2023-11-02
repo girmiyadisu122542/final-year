@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Mirrored from themeturn.com/tf-db/edumel-demo/edumel/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 16 Feb 2023 22:47:31 GMT -->
+
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="description" content="Edumel- Education Html Template by dreambuzz">
   <meta name="keywords" content="education,edumel,instructor,lms,online,instructor,dreambuzz,bootstrap,kindergarten,tutor,e learning">
   <meta name="author" content="dreambuzz">
 
-  <title>Edumel- Education Html Template</title>
+  <title>Wollo University Project Repository</title>
 
   <!-- Mobile Specific Meta-->
   <meta name="viewport" content="width=device-width, initial-scale=1">

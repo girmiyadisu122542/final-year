@@ -24,6 +24,7 @@ import ViewDocumentResearchOffice from './pages/Research Office/Document.vue'
 import Announcement from './pages/Research Office/Announcement.vue'
 import Proposal from './pages/Research Office/Proposal.vue'
 import UploadDocumentResearcher from './pages/Researcher/UploadDocument.vue'
+import DocumentDetail from  './pages/ViewDocument.vue'
 const routes = [
     { path : '/' ,name : 'Dashboard' ,component: Dashboard },
     { path : '/users' , name : 'User' , component : User },
@@ -58,6 +59,8 @@ const routes = [
 
     // researcher
     { path : '/researcher/upload-document' , name : 'UploadDocumentResearcher' , component : UploadDocumentResearcher },
+    //other 
+    { path: '/document-detail/:id', name : 'DocumentDetail', component: DocumentDetail },
 
 ] 
 

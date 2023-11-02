@@ -392,7 +392,7 @@ function showUser(id){
 										<tr role="row" v-for="(announce, index) in announcements" :key="announce.index">
 											<td>{{ index + 1 }}</td>
 											<td>{{ announce.title.toUpperCase() }}</td>
-											<td>{{ announce.content }}</td>
+											<td>{{ announce.content.substring(0,25) }}...</td>
 											<td>{{ announce.user.full_name }}</td>
 											<td>{{ announce.year.name }}</td>
                                             <td>{{ format(new Date(announce.announcement_start_date), 'MMMM do, yyyy') }}</td>

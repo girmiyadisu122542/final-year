@@ -226,7 +226,21 @@ function showData(id){
 				})
 	})
 }
-
+function downloadDocument(id,file){
+	this.axios({
+                url: '/api/download-documnet/' + id,
+                method: 'GET',
+                responseType: 'arraybuffer',
+            }).then((response) => {
+                let blob = new Blob([response.data], {
+                    type: 'application/pdf'
+                })
+                let link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = file
+                link.click()
+            });
+        }
 
 </script>
 <template>
@@ -425,7 +439,7 @@ function showData(id){
 											<td v-if="document.cover_page"><img :src="document.cover_page" style="height: 70px;width: 100px;" alt="No Image"></td>
 											<td v-else><img style="height: 70px;width: 100px;" :src="'/document/no_image.jpg'" alt="no_image"></td>
 											<!-- <td>{{ document.cover_page }}</td> -->
-											<td>{{ document.title.toUpperCase() }}</td>
+											<td> <RouterLink :to="{name :'DocumentDetail',params:{id:document.id}}"> {{ document.title.toUpperCase() }}</RouterLink> </td>
 											<td>{{ document.abstract }}</td>
 											<td>{{ document.user.full_name }}</td>
 											<td>{{ document.author }}</td>
@@ -453,8 +467,8 @@ function showData(id){
 																	<i class="lni lni-eye"></i> View Comment
 																</RouterLink>
 															</li>
-															<li ><button  @click.prevent=""
-																	class="btn btn-outline-primary dropdown-item"><i class="lni lni-eye"></i>View</button>
+															<li ><button  @click.prevent="downloadDocument(document.id,document.path)"
+																	class="btn btn-outline-primary dropdown-item"><i class="lni lni-download">download</i></button>
 															</li>
 															<li v-if="document.status == 0"><button  @click.prevent="deleteData(document.id)"
 																	class="btn btn-outline-danger dropdown-item"><i

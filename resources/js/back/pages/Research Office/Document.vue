@@ -283,8 +283,8 @@ function setValue(id){
 											<td>{{ document.author }}</td>
 											<td>{{ document.year.name }}</td>
 											<td>{{ format(new Date(document.updated_at), 'MMMM do, yyyy') }}</td>
-											<td><span :class="document.status == 0 ? 'badge bg-danger' : document.status == 1? 'badge bg-success':'badge bg-danger'">{{
-												document.status == 0 ? 'Pending...' :document.status == 1 ? 'Approved':'Rejected' }}</span></td>
+											<td><span :class="document.status == 0 ? 'badge bg-danger' : document.status == 4? 'badge bg-success':'badge bg-danger'">{{
+												document.status == 0 ? 'Pending...' :document.status == 4 ? 'Approved':'Rejected' }}</span></td>
 
 											<td>				
 											
@@ -311,8 +311,8 @@ function setValue(id){
 															</li>
 															<li v-if="document.status<=6" ><button  @click.prevent="approveDocument(document.id)"
 																	class="btn btn-outline-danger dropdown-item"><i
-																		:class="document.status == 2 ? 'fadeIn animated bx bx-plus' : 'fadeIn animated bx bx-minus'"></i>{{
-																			document.status == 2 ? 'Approve' : 'Reject' }}</button>
+																		:class="document.status == 1 ? 'fadeIn animated bx bx-plus' : 'fadeIn animated bx bx-minus'"></i>{{
+																			document.status == 1 ? 'Approve' : 'Reject' }}</button>
 															</li>
 														
 														</ul>

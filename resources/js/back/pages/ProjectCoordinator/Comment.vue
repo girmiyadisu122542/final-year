@@ -208,7 +208,21 @@ function showData(id){
 	})
 }
 
-
+function downloadComment(id,file){
+	this.axios({
+                url: '/api/download-comment/' + id,
+                method: 'GET',
+                responseType: 'arraybuffer',
+            }).then((response) => {
+                let blob = new Blob([response.data], {
+                    type: 'application/pdf'
+                })
+                let link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = file
+                link.click()
+            });
+        }
 </script>
 <template>
 	<div class="page-content">
@@ -250,7 +264,7 @@ function showData(id){
 						</div>
 						<div class="text-danger" v-if="errors.comment && errTime == true">* {{ errors.comment[0] }}</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-6" v-if="isUser==false">
 						<label for="validationCustom01" class="form-label">Attached File</label>
 						<input :disabled="isUser"  @change="onDocumentSelected"  type="file" class="form-control border-primary" 
 							placeholder="select document">
@@ -350,7 +364,9 @@ function showData(id){
 											<td>{{ comment.document.title.toUpperCase() }}</td>
 											<td>{{ comment.comment }}</td>
 											<td>{{ comment.user.full_name  }} <br> <span><i><small class="text-info">{{comment.role.name}}</small></i></span></td>
-											<td v-if="comment.attached_file != null">{{ comment.attached_file }}</td>
+											<td v-if="comment.attached_file != null"> 
+												<i @click.prevent="downloadComment(comment.id,comment.attached_file)" class="lni lni-download">download</i>
+										 </td>
 											<td v-else><span><i><small class="text-secondary">No file</small></i></span></td>
 											<td>{{ format(new Date(comment.created_at), 'MMMM do, yyyy') }}</td>
 											<td>{{ format(new Date(comment.updated_at), 'MMMM do, yyyy') }}</td>

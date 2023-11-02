@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 
 class StudentController extends Controller
 {
@@ -77,14 +78,12 @@ class StudentController extends Controller
 
   public function updateDocument(Request $request, $id)
   {
-    $document = Document::find($id);
+    $document = Document::where('id',$id)->first();
     $request->validate([
-      'document' => 'file|mimes:pdf,docx',
       'author' => 'required',
-      'cover_page' => 'file|mimes:png,jpg,jpeg',
       'advisor' => 'required',
       'abstract' => 'required',
-      'title' => 'required',
+      'title' => 'required|unique:documents,'.$id,
       'page_number' => 'required|numeric',
       'accadamic_year' => 'required',
     ]);
@@ -104,6 +103,7 @@ class StudentController extends Controller
       if ($request->hasFile('cover_page')) {
         $file = $request->file('cover_page');
         $file_name_ext = time() . '.' . $file->getClientOriginalExtension();
+        // $img = Image::make($request->cover_page)->resize(752,390);
         $upload_path = '/document/cover_page/';
         $name = $upload_path . $file_name_ext;
         unlink(public_path($document->cover_page));

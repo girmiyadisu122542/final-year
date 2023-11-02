@@ -258,7 +258,7 @@ function setValue(id){
 										<th>Uploader</th>
 										<th>Author</th>
 									    <th>Year</th>
-										<td></td>
+									
 										<th>Updated At</th>
 										<th>Status</th>
 										<th width="5%">Actions</th>
@@ -286,7 +286,7 @@ function setValue(id){
 											<td>{{ document.user.full_name }}</td>
 											<td>{{ document.author }}</td>
 											<td>{{ document.year.name }}</td>
-											<td><iframe :src="document.path" frameborder="1" width="200px" height="200px"></iframe></td>
+											
 											<td>{{ format(new Date(document.updated_at), 'MMMM do, yyyy') }}</td>
 											<td v-if="document.status <=3"><RouterLink :to="{name:'ViewCommentProjectCoordinator',params:{id:document.id}}"> 
 												<span :class="document.status == 2 ? 'badge bg-danger' : 'badge bg-success'">{{

@@ -224,32 +224,21 @@ function showData(id){
 
 		<div v-if="isHide==false" class="card border-top border-0 border-4 border-primary">
 			<div class="card-body">
-				<div class="table-responsive">
-					<div class="row">
-
-						<div class="col-12 col-lg-8 col-xl-8 d-flex">
-
-						</div>
-						<div class="col-12 col-lg-4 col-xl-4 d-flex">
-							<div class="dt-buttons btn-group">
-								<button class="btn btn-outline-success " type="button">
-									<span>Grid</span>
-								</button>
-								<button class="btn btn-outline-info " type="button">
-									<span>Excel</span>
-								</button>
-								<button class="btn btn-outline-danger " type="button">
-									<span>Import</span>
-								</button>
-								<button v-if="!isHide" @click="isHide = true" class="btn btn-outline-warning "
-									type="button">
-									<span><i class="fadeIn animated bx bx-plus-circle"></i>Create</span>
-								</button>
-							</div>
+				<div class="row">
+					<div class="col-12 col-lg-8 col-xl-8 d-flex">
+					</div>
+					<div class="col-12 col-lg-4 col-xl-4 d-flex">
+						<div class="dt-buttons btn-group">
+							<button v-if="!isHide" @click="isHide = true" class="btn btn-outline-warning "
+								type="button">
+								<span><i class="fadeIn animated bx bx-plus-circle"></i>Create</span>
+							</button>
 						</div>
 					</div>
+					</div>
 					<hr>
-					<div class="row mb-3">
+									<div class="table-responsive">
+                      <div class="row mb-3">
 						<div class="col-12 col-lg-4 col-xl-4 d-flex">
 							<select id="inputState " class="form-select  border-primary text-primary">
 								<i class="lni lni-funnel"></i>

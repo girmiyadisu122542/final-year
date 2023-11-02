@@ -11,7 +11,8 @@ const userData = ref('')
 const user_role =ref('')
 const user_dept = ref('')
 userData.value = Auth.user
-console.log(userData.value.role_id)
+
+
 onMounted(()=>{
    let role_id = userData.value.role_id
    let dept_id = userData.value.department_id
@@ -19,6 +20,7 @@ axios.defaults.headers.common['Authorization'] = token.value
    axios.get('api/get-role/'+role_id)
    .then(res=>{
     user_role.value = res.data[0].name
+
    }).catch(err=>{
     console.log(err)
    })
@@ -66,23 +68,8 @@ axios.defaults.headers.common['Authorization'] = token.value
                                            
                     </ul>
                 </li> -->
-                <li  class="menu-label">User Management</li>
-                 <li>
-                    <a href="javascript:;" class="has-arrow">
-                        <div class="parent-icon"><i class="fadeIn animated bx bx-user"></i>
-                        </div>
-                        <div class="menu-title">User Management</div>
-                    </a>
-                    <ul>
-                        <li> <RouterLink :to="{name : 'User'}" ><i class="bx bx-right-arrow-alt"></i>User</RouterLink>
-                        </li>
-                        <li> <RouterLink :to="{name : 'Role'}" ><i class="bx bx-right-arrow-alt"></i>Role</RouterLink>
-                        </li>
-                        
-                                           
-                    </ul>
-                </li>
-                <li class="menu-label">Accadamics</li>
+                <template v-if="userData.role_id == 1">
+                    <li class="menu-label">Accadamics</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
                         <div class="parent-icon"><i class="lni lni-home"></i>
@@ -104,8 +91,28 @@ axios.defaults.headers.common['Authorization'] = token.value
                         
                                            
                     </ul>
+                    <li   class="menu-label">User Management</li>
+                 <li >
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class="fadeIn animated bx bx-user"></i>
+                        </div>
+                        <div class="menu-title">User Management</div>
+                    </a>
+                    <ul>
+                        <li> <RouterLink :to="{name : 'Role'}" ><i class="bx bx-right-arrow-alt"></i>Role</RouterLink>
+                        </li>
+                        <li> <RouterLink :to="{name : 'User'}" ><i class="bx bx-right-arrow-alt"></i>User</RouterLink>
+                        </li>
+                        
+                                           
+                    </ul>
                 </li>
+                
+                </li>
+                </template>
+               
             
+               <template v-if="userData.role_id == 2">
                 <li class="menu-label">Department Head</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
@@ -123,7 +130,9 @@ axios.defaults.headers.common['Authorization'] = token.value
                                            
                     </ul>
                 </li>
-                <li class="menu-label">Project Coordinator</li>
+               </template>
+                <template v-if="userData.role_id == 17">
+                    <li class="menu-label">Project Coordinator</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
                         <div class="parent-icon"><i class="fadeIn animated bx bx-user"></i>
@@ -140,6 +149,8 @@ axios.defaults.headers.common['Authorization'] = token.value
                                            
                     </ul>
                 </li>
+                </template >
+               <template v-if="userData.role_id == 15">
                 <li class="menu-label">PostGraduate Coordinator</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
@@ -158,7 +169,9 @@ axios.defaults.headers.common['Authorization'] = token.value
                                            
                     </ul>
                 </li>
-                <li class="menu-label">Advisor</li>
+               </template>
+                <template v-if="userData.role_id == 13">
+                    <li class="menu-label">Advisor</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
                         <div class="parent-icon"><i class="fadeIn animated bx bx-user"></i>
@@ -171,8 +184,10 @@ axios.defaults.headers.common['Authorization'] = token.value
                                                                  
                     </ul>
                 </li>
+                </template>
               
-                <li class="menu-label">Student</li>
+                <template v-if="userData.role_id == 10">
+                    <li class="menu-label">Student</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
                         <div class="parent-icon"><i class="fadeIn animated bx bx-user"></i>
@@ -187,7 +202,8 @@ axios.defaults.headers.common['Authorization'] = token.value
                                            
                     </ul>
                 </li>
-            
+                </template>
+            <template v-if="userData.role_id == 14">
                 <li class="menu-label">Research Office</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
@@ -208,6 +224,9 @@ axios.defaults.headers.common['Authorization'] = token.value
                                            
                     </ul>
                 </li>
+            </template>
+                
+            <template v-if="userData.role_id == 12">
                 <li class="menu-label">Researcher</li>
                 <li>
                     <a href="javascript:;" class="has-arrow">
@@ -223,6 +242,7 @@ axios.defaults.headers.common['Authorization'] = token.value
                                            
                     </ul>
                 </li>
+            </template>
             </ul>
             <!--end navigation-->
         </div>

@@ -12,9 +12,11 @@ use App\Http\Controllers\Back\Accadamics\DepartmentController;
 use App\Http\Controllers\Back\Accadamics\StudyLevelController;
 use App\Http\Controllers\Back\Accadamics\AdmissionTypeController;
 use App\Http\Controllers\Back\AdvisorController;
+use App\Http\Controllers\Back\AllBackendController;
 use App\Http\Controllers\Back\DepartmentHeadController;
 use App\Http\Controllers\Back\ResearcherController;
 use App\Http\Controllers\Back\ResearchOfficeController;
+use App\Http\Controllers\Front\FrontPageControler;
 
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/register',[AuthController::class,'register']);
@@ -120,12 +122,17 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/approve-document-researchOffice/{id}' ,[ResearchOfficeController::class, 'approveDocument']);
     Route::get('/get-researcher-proposal' ,[ResearchOfficeController::class, 'getProposals']);
     Route::get('/approve-proposal/{id}' ,[ResearchOfficeController::class, 'approveProposals']);
+    Route::get('/download-proposal/{id}' ,[ResearchOfficeController::class, 'downloadProposal']);
     
     // researcher
     Route::post('/upload-document-researcher',[ResearcherController::class, 'uploadDocument']);
     Route::get('/get-document-researcher' ,[ResearcherController::class, 'getDocument']);
     Route::post('/update-document-researcher/{id}' ,[ResearcherController::class, 'updateDocument']);
+    //upload proposal
     
+    Route::post('/upload-proposal' ,[FrontPageControler::class, 'uploadProposal']);
+    Route::get('/proposal-status' ,[FrontPageControler::class, 'proposalStatus']);
+
     
 
 });
@@ -137,5 +144,20 @@ Route::get('/colleges' ,[CollegeController::class, 'index']);
 Route::get('/admissionTypes' ,[AdmissionTypeController::class, 'index']);
 Route::get('/years',[YearController::class,'index']);
 Route::get('/studyLevels' ,[StudyLevelController::class, 'index']);
+
+// front page
+Route::get('/front-get-documents',[FrontPageControler::class,'getDocuments']);
+Route::get('/get-front-announcements',[FrontPageControler::class,'getAnnouncements']);
+Route::get('/latest-documents',[FrontPageControler::class,'getLatestDocuments']);
+Route::get('/get-single-document/{id}',[FrontPageControler::class,'showDocument']);
+Route::get('/download-documnet/{id}',[AllBackendController::class,'downloadDocument']);
+Route::get('/download-comment/{id}',[AllBackendController::class,'downloadComment']);
+//dashboard
+Route::get('/all-user',[AllBackendController::class,'allUser']);
+Route::get('/all-active-user',[AllBackendController::class,'allActiveUser']);
+Route::get('/all-deactive-user',[AllBackendController::class,'allDeactiveUser']);
+Route::get('/all-document',[AllBackendController::class,'allDocument']);
+Route::get('/all-programs',[AllBackendController::class,'allPrograms']);
+
 
 
