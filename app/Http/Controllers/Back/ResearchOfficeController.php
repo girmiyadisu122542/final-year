@@ -16,17 +16,20 @@ class ResearchOfficeController extends Controller
 {
     public function getResearchers()
     {
-        $researcher = User::where('role_id', 12)->get();
+        $paginateLimit = request('per_page')? request('per_page') :5;
+        $researcher = User::with(['role'])->where('role_id', 12)->latest()->paginate($paginateLimit);
         return response()->json($researcher);
     }
      public function getDocuments(){
-        $document = Document::with(['user', 'year'])->where('department_id',null)->get();
+        $paginateLimit = request('per_page')? request('per_page') :5;
+        $document = Document::with(['user', 'year'])->where('department_id',null)->latest()->paginate($paginateLimit);
         return response()->json($document);
      }
     public function getAnnouncements()
     {
+        $paginateLimit = request('per_page')? request('per_page') :5;
         $user_id = Auth::user()->id;
-        $announce = Announcement::with(['user', 'year'])->where('user_id', $user_id)->get();
+        $announce = Announcement::with(['user', 'year'])->where('user_id', $user_id)->latest()->paginate($paginateLimit);
         return response()->json($announce);
     }
 
@@ -135,7 +138,9 @@ class ResearchOfficeController extends Controller
     }
 
     public function getProposals(){
-        $proposal = Proposal::with(['user','announcement'])->get();
+   
+        $paginateLimit = request('per_page')? request('per_page') :5;
+        $proposal = Proposal::with(['user','announcement'])->latest()->paginate($paginateLimit);
         return response()->json($proposal);
     }
 

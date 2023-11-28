@@ -16,9 +16,10 @@ class ProjectCoordinatorController extends Controller
 {
     public function getAdvisor()
     {
+        $paginateLimit = request('per_page')? request('per_page') :5;
         $dept_id = Auth::user()->department_id;
         $role_id = 13;
-        $advisor = User::with(['role', 'department'])->where('role_id', $role_id)->where('department_id', $dept_id)->get();
+        $advisor = User::with(['role', 'department'])->where('role_id', $role_id)->where('department_id', $dept_id)->latest()->paginate($paginateLimit);
         return response()->json($advisor);
     }
 
@@ -73,8 +74,9 @@ class ProjectCoordinatorController extends Controller
 
     public function getDocuments()
     {
+        $paginateLimit = request('per_page')? request('per_page') :5;
         $user_id = Auth::user()->department_id;
-        $document = Document::with(['user', 'department', 'year', 'advisor'])->where('department_id', $user_id)->where('status', '>=', 2)->get();
+        $document = Document::with(['user', 'department', 'year', 'advisor'])->where('department_id', $user_id)->where('status', '>=', 2)->latest()->paginate($paginateLimit);
         return response()->json($document);
     }
 
@@ -133,7 +135,8 @@ class ProjectCoordinatorController extends Controller
 
     public function getSingleDocumentComment($id)
     {
-        $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->where('status', '>=', 1)->get();
+        $paginateLimit = request('per_page')? request('per_page') :5;
+        $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->where('status', '>=', 1)->latest()->paginate($paginateLimit);
         return response()->json($comment);
     }
     public function updateComment(Request $request, $id)

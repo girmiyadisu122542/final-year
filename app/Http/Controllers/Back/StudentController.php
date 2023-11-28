@@ -17,7 +17,8 @@ class StudentController extends Controller
   public function getDocument()
   {
     $user_id = Auth::user()->id;
-    $document = Document::with(['user', 'department', 'year'])->where('user_id', $user_id)->get();
+    $paginateLimit = request('per_page') ? request('per_page'):5;
+    $document = Document::with(['user', 'department', 'year'])->where('user_id', $user_id)->latest()->paginate($paginateLimit);
     return response()->json($document);
   }
   public function getAdvisor()
@@ -144,7 +145,8 @@ class StudentController extends Controller
 
   public function getSingleDocumentComment($id)
   {
-    $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->get();
+    $paginateLimit = request('per_page')? request('per_page') :5;
+    $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->latest()->paginate($paginateLimit);
     return response()->json($comment);
   }
 }

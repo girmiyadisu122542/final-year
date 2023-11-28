@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { ref, onMounted, watch, reactive } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { format } from 'date-fns'
 import Swal from "sweetalert2";
@@ -17,24 +17,56 @@ const full_name = ref('');
 const email = ref('');
 const isEdit = ref(false)
 const userId= ref('');
-
-function loadData() {
-	isLoading.value = true
-	axios.defaults.headers.common['Authorization'] = token.value
-	axios.get('api/advisors')
-		.then(res => {
-			users.value = res.data
-			setTimeout(() => {
-				isLoading.value = false
-			}, 500);
-
-			//console.log(res.data)
-		}).catch(err => {
-			console.log(err.data.response)
-		}).finally(() => {
-			isLoading.value = false
-		})
+const perPage = ref("");
+const search_key = ref("");
+function loadData(url, per_page = null) {
+	      let cxr = "?";
+            url.includes("?") ? (cxr = "&") : "";
+            per_page == null ? (per_page = perPage.value) : "";
+            url = url + cxr + "per_page=" + per_page;
+           isLoading.value  = true;
+            axios.get(url)
+                .then((res) => {
+                   users.value = res.data;
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+                .finally(() => {
+                    setTimeout(() => {
+                       isLoading.value = false;
+                    }, 500);
+                });
 }
+
+watch(perPage,(newVal)=>{
+	    loadData(
+              users.value.path + "?page=" + users.value.current_page,
+                newVal
+            );
+})
+
+const filterByStatus = computed(()=>{
+	if (search_key.value != "") {
+                 isLoading.value = true
+                setTimeout(()=>{
+                    isLoading.value =false
+                },500)
+                return users.value.data.filter(
+                    (item) => (item.full_name.toLowerCase().includes(search_key.value.toLowerCase()))||
+						(item.email.toLowerCase().includes(search_key.value.toLowerCase()))|| 
+						(item.role.name.toLowerCase().includes(search_key.value.toLowerCase()))
+                );
+            } else {
+                isLoading.value = true
+                setTimeout(()=>{
+                 isLoading.value =false
+                },500)
+                return users.value.data;
+            }
+})
+
+
 function deleteData(id) {
 
 	Swal.fire({
@@ -51,7 +83,7 @@ function deleteData(id) {
 			axios.defaults.headers.common['Authorization'] = token.value;
 			axios.get('api/delete-user/' + id)
 				.then(() => {
-					users.value = users.value.filter(user => {
+					users.value.data = users.value.data.filter(user => {
 						return user.id != id;
 					})
 					toast.info("User Successfully Deleted", {
@@ -76,7 +108,7 @@ function addUser() {
 		'email': email.value,
 	}).then(() => {
 			isHide.value = false
-			loadData();
+			loadData('api/advisors');
 			toast.success("Advisor Successfully Added!!", {
 				timeout: 2000
 			})
@@ -116,7 +148,7 @@ function activeUser(id) {
 			axios.defaults.headers.common['Authorization'] = token.value;
 			axios.get('api/active-user/' + id)
 				.then(() => {
-					loadData();
+					loadData('api/advisors');
 					toast.success("User Status Changed!", {
 						timeout: 2000
 					})
@@ -142,7 +174,7 @@ function editUser(){
 			isHide.value = false
 			isEdit.value = false
 			resetState();
-			loadData();
+			loadData('api/advisors');
 			toast.success("User Successfully Updated!!", {
 				timeout: 2000
 			})
@@ -168,7 +200,7 @@ function editUser(){
 }
 
 onMounted(() => {
-	loadData();
+	loadData('api/advisors');
 })
 
 function resetState() {
@@ -265,90 +297,72 @@ function showUser(id){
 
 		<div v-if="isHide==false" class="card border-top border-0 border-4 border-primary">
 			<div class="card-body">
-				<div class="table-responsive">
-					<div class="row">
+				
 
-						<div class="col-12 col-lg-8 col-xl-8 d-flex">
+			<div class="table-responsive">
+						<div class="row g-3">
+							<div class="col-12 col-lg-10 col-xl-10 d-flex">
 
-						</div>
-						<div class="col-12 col-lg-4 col-xl-4 d-flex">
-							<div class="dt-buttons btn-group">
-								<button class="btn btn-outline-success " type="button">
-									<span>Grid</span>
-								</button>
-								<button class="btn btn-outline-info " type="button">
-									<span>Excel</span>
-								</button>
-								<button class="btn btn-outline-danger " type="button">
-									<span>Import</span>
-								</button>
-								<button v-if="!isHide" @click="isHide = true" class="btn btn-outline-warning "
-									type="button">
-									<span><i class="fadeIn animated bx bx-plus-circle"></i>Create</span>
-								</button>
 							</div>
-						</div>
-					</div>
-					<hr>
-					<div class="row mb-3">
-						<div class="col-12 col-lg-4 col-xl-4 d-flex">
-							<select id="inputState " class="form-select  border-primary text-primary">
-								<i class="lni lni-funnel"></i>
-								<option selected>Filter By</option>
-								<option>Name</option>
-								<option>Age</option>
-								<option>Email</option>
+							<div class="col-12 col-lg-2 col-xl-2 d-flex">
+								<div class="dt-buttons btn-group">
+									<button v-if="!isHide" @click="isHide = true" class="btn btn-outline-warning "
+										type="button">
+										<span><i class="fadeIn animated bx bx-plus-circle"></i>Create</span>
+									</button>
+								</div>
+							</div>
 
-							</select>
-						</div>
-						<div class="col-12 col-lg-3 col-xl-3 d-flex">
-							<select id="inputState" class="form-select  border-primary text-primary">
-								<option value="" selected disabled>Per Page</option>
-								<option value="10">10</option>
-								<option value="20">20</option>
-								<option value="30">30</option>
+							
+							</div>
+							<hr>
+                                <div class="row mb-3">
+                                    <div class="col-12 col-lg-6 col-xl-6 d-flex">
+                                        <select id="inputState" v-model="perPage"
+                                            class="form-select border-primary text-primary">
+                                            <option value="" selected disabled>Per Page</option>
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                            <option value="30">30</option>
+                                        </select>
+                                    </div>
+                                   
 
-							</select>
-						</div>
-						<div class="col-12 col-lg-5 col-xl-5 d-flex position-relative">
-							<input type="search" class="form-control ps-5  border-primary text-primary"
-								placeholder="Search..."> <span
-								class="position-absolute top-50 product-show translate-middle-y "><i
-									class="bx bx-search"></i></span>
-
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-12">
-							<table id="example2" class="table table-striped  dataTable text-primary">
-								<thead>
-									<tr role="row">
-										<th>#</th>
+                                    <div class="col-12 col-lg-6 col-xl-6 d-flex position-relative">
+                                   <input v-model="search_key" type="search" class="form-control ps-5 border-primary text-primary" placeholder="Search..." >
+                                        <span class="position-absolute top-50 product-show translate-middle-y"><i
+                                                class="bx bx-search"></i></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table id="example2" class="table table-striped dataTable text-primary">
+                                            <thead>
+                                                <tr role="row">
+                                                   <th>#</th>
 										<th>Full Name</th>
 										<th>Email</th>
 										<th>Department</th>
 										<th>Code</th>
 										<th>Status</th>
-										<th>CreatedAt</th>
+										<th>Created Date</th>
 										<th width="5%">Actions</th>
-									</tr>
-								</thead>
-								<template v-if="isLoading">
-									<tbody>
+                                                   
+                                                </tr>
+                                            </thead>
+                                            <template v-if="isLoading">
+                                                <tbody>
+                                                    <div class="spinner-border text-primary mt-4" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </tbody>
+                                            </template>
 
-										<div class="spinner-border text-primary mt-4" role="status"> <span
-												class="visually-hidden">Loading...</span>
-										</div>
-
-
-									</tbody>
-
-								</template>
-								<template v-else>
-									<tbody v-if="users.length!=0">
-										<tr role="row" v-for="(user, index) in users" :key="user.index">
-											<td>{{ index + 1 }}</td>
-											<td>{{ user.full_name.toUpperCase() }}</td>
+                                            <template v-else>
+                                           <tbody v-if="users.data !=  null">
+                                            <tr role="row" v-for="(user,index) in filterByStatus" :key="user.id">
+                                            <th scope="row">{{ users.from +index }} </th>
+                                           <td>{{ user.full_name.toUpperCase() }}</td>
 											<td>{{ user.email }}</td>
 											<td v-if="user.department_id">{{ user.department.name }}</td>
 											<td v-else><span class="badge bg-light text-dark">No</span></td>
@@ -386,59 +400,70 @@ function showUser(id){
 													</div>
 												</div>
 											</td>
-
-										</tr>
-									</tbody>
-									<tbody v-else>
-										<div valign="top" colspan="6" class=" text-center dataTables_empty mt-4 "
-											style="width: 250%;font-size: large;">
-
-											<span class="badge bg-light text-primary">No Records Found!</span>
-										</div>
-									</tbody>
-
-								</template>
-							</table>
-						</div>
-					</div>
-					<div class="row mb-0">
-						<div class="col-sm-12 col-md-8">
-							<div class="dataTables_info">
-								Showing 1 to 10 of 57 entries
-							</div>
-						</div>
-						<div class="col-sm-12 col-md-4">
-							<div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
-								<ul class="pagination">
-									<li class="paginate_button page-item previous disabled" id="example2_previous">
-										<a href="#" aria-controls="example2" data-dt-idx="0" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevrons-left"></i> </a>
-									</li>
-									<li class="paginate_button page-item active">
-										<a href="#" aria-controls="example2" data-dt-idx="1" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevron-left"></i>
-										</a>
-									</li>
-									<li class="paginate_button page-item">
-										<a href="#" aria-controls="example2" data-dt-idx="6" tabindex="0" class="page-link">
-											1
-										</a>
-									</li>
-									<li class="paginate_button page-item">
-										<a href="#" aria-controls="example2" data-dt-idx="6" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevron-right"></i>
-										</a>
-									</li>
-									<li class="paginate_button page-item next" id="example2_next">
-										<a href="#" aria-controls="example2" data-dt-idx="7" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevrons-right"></i>
-										</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-				</div>
-			</div>
+                                                    </tr>
+                                                
+                                                </tbody>
+                                                <tbody v-else>
+                                                    <div valign="top" colspan="6" class="text-center dataTables_empty mt-4"
+                                                      style="width: 250%;font-size: large;">
+                                                      <span class="badge bg-light text-primary">No Records Found!</span>
+                                                    </div>
+                                                </tbody>
+                                            </template>
+                                        </table>
+                                    </div>
+                                </div>
+     <div class="row mb-0">
+        <div class="col-sm-12 col-md-8">
+            <div class="dataTables_info">
+                Showing {{ users.from }} to {{ users.to }} of {{ users.total }} entries
+            </div>
+        </div>
+                <div class="col-sm-12 col-md-4">
+                  <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
+                        <ul class="pagination">
+                        <li @click="users.current_page ==1? '': loadData(users.first_page_url)" :class="{disabled:users.current_page == 1,'paginate_button page-item next': true,}" id="example2_previous">
+                                <a  aria-controls="example2" data-dt-idx="0" tabindex="0"
+                                     class="page-link"><i class="fadeIn animated bx bx-chevrons-left"></i></a>
+                        </li>
+                        <li @click="users.prev_page_url !=null? loadData       (users.prev_page_url): ''" :class="{disabled:users.prev_page_url ==null,'paginate_button page-item previous': true,}" id="simpletable_next">
+                               <a  aria-controls="example2" data-dt-idx="1" tabindex="0"
+                                    class="page-link"><i class="fadeIn animated bx bx-chevron-left"></i></a>
+                         </li>
+                        <li @click="loadData(users.path +'?page=' +users.current_page)" class="paginate_button page-item active">
+                               <a aria-controls="example2" data-dt-idx="6" tabindex="0"
+                                    class="page-link"> {{ users.current_page }}</a>
+                         </li>
+                        <li v-if="users.last_page >users.current_page +1"
+                        @click="loadData(users.path +'?page=' +(users.current_page +1))"  class="paginate_button page-item">                    
+                                <a  aria-controls="example2" data-dt-idx="6" tabindex="0"
+                                    class="page-link"> {{users.current_page + 1 }}
+                                                    </a>
+                         </li>
+                        <li v-if="users.last_page >users.current_page +2" 
+                        @click="loadData(users.path +'?page=' +(users.current_page +2))" class="paginate_button page-item"><a  aria-controls="example2" data-dt-idx="6" tabindex="0"  class="page-link">{{ users.current_page + 2 }} </a>
+                        </li>
+                          <li @click="users.next_page_url !=null ? loadData(users.next_page_url): ''" :class="{disabled:users.next_page_url ==null,
+                            'paginate_button page-item next': true,}" id="simpletable_next">
+                                <a  aria-controls="example2" data-dt-idx="6" tabindex="0"
+                                    class="page-link"><i class="fadeIn animated bx bx-chevron-right"></i>
+                                </a>
+                        </li>
+                        <li @click="users.current_page == users.last_page? '': loadData(users.last_page_url)" :class="{disabled:users.current_page == users.last_page,'paginate_button page-item next': true,}"  id="simpletable_next">
+                            <a  aria-controls="example2" data-dt-idx="7" tabindex="0"
+                                class="page-link"><i class="fadeIn animated bx bx-chevrons-right"></i>
+                                                    </a>
+                         </li>
+                        <li @click="loadData(users.path +'?page=' +users.current_page)"  class="paginate_button page-item" id="simpletable_next">
+                            <a  aria-controls="example2" data-dt-idx="7" tabindex="0"
+                                class="page-link"><i class="fadeIn animated bx bx-refresh"></i>
+                                                    </a>
+                        </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 		</div>
 	</div>
 </div></template>

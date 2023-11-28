@@ -10,6 +10,12 @@ use App\Http\Controllers\Controller;
 
 class CollegeController extends Controller
 {
+
+    public function getColleges(){
+        $paginateLimit = request('per_page')? request('per_page') :10;
+        $college = College::latest()->paginate($paginateLimit);
+        return response()->json($college);
+    }
     public function index(){
         return response()->json(College::all());
     }

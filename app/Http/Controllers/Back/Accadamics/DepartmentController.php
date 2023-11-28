@@ -13,6 +13,12 @@ class DepartmentController extends Controller
     public function index(){
         return response()->json(Department::with(['college','admission','study'])->get());
     }
+
+    public function getDepartments(){
+        $paginateLimit = request('per_page')? request('per_page') :10;
+        $department = Department::with(['college','admission','study'])->latest()->paginate($paginateLimit);
+        return response()->json($department);
+    }
     public function allDept(){
         return response()->json(Department::all());
 

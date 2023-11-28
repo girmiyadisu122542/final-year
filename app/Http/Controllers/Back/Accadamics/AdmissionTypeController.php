@@ -14,6 +14,12 @@ class AdmissionTypeController extends Controller
         return response()->json(AdmissionType::all());
     }
 
+    public function getAdmissionType(){
+        $paginateLimit = request('per_page')? request('per_page') :10;
+        $admission = AdmissionType::latest()->paginate($paginateLimit);
+        return response()->json($admission);
+    }
+
     public function deleteAdmissionType($id){
         $admissionType=AdmissionType::find($id);
         if($admissionType->delete()){

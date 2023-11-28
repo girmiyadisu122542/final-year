@@ -16,16 +16,18 @@ class DepartmentHeadController extends Controller
 {
     public function getProjectCoordinator()
     {
+        $paginateLimit = request('per_page')? request('per_page') :5;
         $dept_id = Auth::user()->department_id;
         $role_id = 17;
-        $projectCoordinator = User::with(['role', 'department'])->where('role_id', $role_id)->where('department_id', $dept_id)->get();
+        $projectCoordinator = User::with(['role', 'department'])->where('role_id', $role_id)->where('department_id', $dept_id)->latest()->paginate($paginateLimit);
         return response()->json($projectCoordinator);
     }
     public function getStudents()
     {
+       $paginateLimit = request('per_page')? request('per_page') :5;
         $dept_id = Auth::user()->department_id;
         $role_id = 10;
-        $student = User::with(['role', 'department'])->where('role_id', $role_id)->where('department_id', $dept_id)->get();
+        $student = User::with(['role', 'department'])->where('role_id', $role_id)->where('department_id', $dept_id)->latest()->paginate($paginateLimit);
         return response()->json($student);
     }
     public function addProjectCoordinator(Request $request)
@@ -79,8 +81,9 @@ class DepartmentHeadController extends Controller
 
     public function getDocuments()
     {
+        $paginateLimit = request('per_page')? request('per_page') :5;
         $user_id = Auth::user()->department_id;
-        $document = Document::with(['user', 'department', 'year', 'advisor'])->where('department_id', $user_id)->where('status', '>=', 4)->get();
+        $document = Document::with(['user', 'department', 'year', 'advisor'])->where('department_id', $user_id)->where('status', '>=', 4)->latest()->paginate($paginateLimit);
         return response()->json($document);
     }
     public function addComment(Request $request)
@@ -137,7 +140,8 @@ class DepartmentHeadController extends Controller
     }
     public function getSingleDocumentComment($id)
     {
-        $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->where('status', 2)->get();
+        $paginateLimit = request('per_page')? request('per_page') :5;
+        $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->where('status', 2)->latest()->paginate($paginateLimit);
         return response()->json($comment);
     }
     public function updateComment(Request $request, $id)

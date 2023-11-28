@@ -29,6 +29,7 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/add-user',[UserController::class,'addUser']);
     Route::get('/delete-user/{id}' ,[UserController::class, 'deleteUser']);
     Route::get('/active-user/{id}' ,[UserController::class, 'changeStatus']);
+    Route::get('/get-users' ,[UserController::class, 'getUsers']);
     Route::get('/get-user/{id}' ,[UserController::class, 'showUser']);
     Route::post('/update-user/{id}',[UserController::class,'updateUser']);
 
@@ -39,32 +40,39 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/add-role',[RoleController::class,'addRole']);
     Route::get('/delete-role/{id}' ,[RoleController::class, 'deleteRole']);
     Route::get('/get-role/{id}' ,[RoleController::class, 'showRole']);
+    Route::get('/get-roles' ,[RoleController::class,'getRoles']);
     Route::post('/update-role/{id}',[RoleController::class,'updateRole']);
     //college controller
     Route::post('/add-college',[CollegeController::class,'addCollege']);
     Route::get('/delete-college/{id}' ,[CollegeController::class, 'deleteCollege']);
     Route::get('/get-college/{id}' ,[CollegeController::class, 'showCollege']);
+    Route::get('/get-colleges' ,[CollegeController::class,'getColleges']);
     Route::post('/update-college/{id}',[CollegeController::class,'updateCollege']);
     //AdmissionType
     Route::post('/add-admissionType',[AdmissionTypeController::class,'addAdmissionType']);
     Route::get('/delete-admissionType/{id}' ,[AdmissionTypeController::class, 'deleteAdmissionType']);
     Route::get('/get-admissionType/{id}' ,[AdmissionTypeController::class,'showAdmissionType']);
     Route::post('/update-admissionType/{id}',[AdmissionTypeController::class,'updateAdmissionType']);
+    Route::get('/get-admissiontypes' ,[AdmissionTypeController::class,'getAdmissionType']);
+    
     //study level
     Route::post('/add-studyLevel',[StudyLevelController::class,'addStudyLevel']);
     Route::get('/delete-studyLevel/{id}' ,[StudyLevelController::class, 'deleteStudyLevel']);
     Route::get('/get-studyLevel/{id}' ,[StudyLevelController::class,'showStudyLevel']);
+    Route::get('/get-studytypes' ,[StudyLevelController::class,'getStudyTypes']);
     Route::post('/update-studyLevel/{id}',[StudyLevelController::class,'updateStudyLevel']);
     //department
     Route::get('/departments',[DepartmentController::class,'index']);
     Route::post('/add-department',[DepartmentController::class,'addDepartment']);
     Route::get('/delete-department/{id}' ,[DepartmentController::class,'deleteDepartment']);
     Route::get('/get-department/{id}' ,[DepartmentController::class, 'showDepartment']);
+    Route::get('/get-departments' ,[DepartmentController::class, 'getDepartments']);
     Route::post('/update-department/{id}',[DepartmentController::class,'updateDepartment']);
     //year
     Route::post('/add-year',[YearController::class,'addYear']);
     Route::get('/delete-year/{id}' ,[YearController::class,'deleteYear']);
     Route::get('/get-year/{id}' ,[YearController::class, 'showYear']);
+    Route::get('/get-years' ,[YearController::class, 'getYears']);
     Route::post('/update-year/{id}',[YearController::class,'updateYear']);
     
     //department head 

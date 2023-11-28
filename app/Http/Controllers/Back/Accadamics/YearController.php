@@ -14,6 +14,12 @@ class YearController extends Controller
         return response()->json(Year::all());
     }
 
+    public function getYears(){
+        $paginateLimit = request('per_page')? request('per_page') :10;
+        $year = Year::latest()->paginate($paginateLimit);
+        return response()->json($year);
+    }
+
     public function deleteYear($id){
         $year=Year::find($id);
         if($year->delete()){

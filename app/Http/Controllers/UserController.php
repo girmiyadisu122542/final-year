@@ -15,6 +15,11 @@ class UserController extends Controller
         $users = User::with(['role', 'department'])->get();
         return response()->json($users);
     }
+    public function getUsers(){
+        $paginateLimit = request('per_page')? request('per_page') :10;
+        $user = User::with(['role', 'department'])->latest()->paginate($paginateLimit);
+        return response()->json($user);
+    }
     public function deleteUser($id)
     {
         $user = User::find($id);

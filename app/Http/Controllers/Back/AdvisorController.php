@@ -15,8 +15,9 @@ class AdvisorController extends Controller
 {
     public function getDocument()
     {
+        $paginateLimit = request('per_page') ? request('per_page') : 5;
         $user_id = Auth::user()->id;
-        $document = Document::with(['user', 'department', 'year'])->where('advisor_id', $user_id)->get();
+        $document = Document::with(['user', 'department', 'year'])->where('advisor_id', $user_id)->latest()->paginate($paginateLimit);
         return response()->json($document);
     }
 
@@ -75,7 +76,8 @@ class AdvisorController extends Controller
     }
     public function getSingleDocumentComment($id)
     {
-        $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->get();
+        $paginateLimit = request('per_page')? request('per_page') :5;
+        $comment = Comment::with(['user', 'document', 'role'])->where('document_id', $id)->latest()->paginate($paginateLimit);
         return response()->json($comment);
     }
 

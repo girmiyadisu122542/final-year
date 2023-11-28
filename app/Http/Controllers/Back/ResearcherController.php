@@ -15,8 +15,9 @@ class ResearcherController extends Controller
 {
     public function getDocument()
     {
+      $paginateLimit = request('per_page')? request('per_page') :5;
       $user_id = Auth::user()->id;
-      $document = Document::with(['user', 'year'])->where('user_id', $user_id)->get();
+      $document = Document::with(['user', 'year'])->where('user_id', $user_id)->latest()->paginate($paginateLimit);
       return response()->json($document);
     }
    

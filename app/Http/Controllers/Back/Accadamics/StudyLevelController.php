@@ -14,11 +14,17 @@ class StudyLevelController extends Controller
         return response()->json(StudyLevel::all());
     }
 
+    public function getStudyTypes(){
+        $paginateLimit = request('per_page')? request('per_page') :10;
+        $study = StudyLevel::latest()->paginate($paginateLimit);
+        return response()->json($study);
+    }
+
     public function deleteStudyLevel($id){
         $studyLevel=StudyLevel::find($id);
         if($studyLevel->delete()){
             return response()->json([
-                'message'=>'StudyLevel deleted successfully',
+                'message'=>'Study Level deleted successfully',
             ],200);
          }else{
             return response()->json([

@@ -13,7 +13,11 @@ class RoleController extends Controller
     public function index(){
         return response()->json(Role::all());
     }
-
+    public function getRoles(){
+        $paginateLimit = request('per_page')? request('per_page') :10;
+        $role = Role::latest()->paginate($paginateLimit);
+        return response()->json($role);
+    }
     public function deleteRole($id){
         $role=Role::find($id);
         if($role->delete()){

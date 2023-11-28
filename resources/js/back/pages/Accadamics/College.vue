@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { ref, onMounted, watch, reactive } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { format } from 'date-fns'
 import Swal from "sweetalert2";
@@ -13,27 +13,58 @@ const isHide = ref(false)
 const isSubmit = ref(false)
 const errors = ref({});
 const errTime = ref(false);
-const name = ref('');
-const isEdit = ref(false)
+const isEdit = ref(false);
 const dataId= ref('');
-
-function loadData() {
-	isLoading.value = true
-	axios.get('api/colleges')
-		.then(res => {
-			colleges.value = res.data
-			setTimeout(() => {
-				isLoading.value = false
-			}, 500);
-
-		}).catch(err => {
-			toast.error("Somethig Went Wrong!!!", {
-					timeout: 2000
-				})
-		}).finally(() => {
-			isLoading.value = false
-		})
+const name = ref('');
+const perPage = ref("");
+const search_key = ref("");
+function loadData(url, per_page = null) {
+	      let cxr = "?";
+            url.includes("?") ? (cxr = "&") : "";
+            per_page == null ? (per_page = perPage.value) : "";
+            url = url + cxr + "per_page=" + per_page;
+           isLoading.value  = true;
+            axios.get(url)
+                .then((res) => {
+                   colleges.value = res.data;
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+                .finally(() => {
+                    setTimeout(() => {
+                       isLoading.value = false;
+                    }, 500);
+                });
 }
+
+watch(perPage,(newVal)=>{
+	    loadData(
+              colleges.value.path + "?page=" + colleges.value.current_page,
+                newVal
+            );
+})
+
+const filterByStatus = computed(()=>{
+	if (search_key.value != "") {
+                 isLoading.value = true
+                setTimeout(()=>{
+                    isLoading.value =false
+                },500)
+                return colleges.value.data.filter(
+                    (item) => (item.name.toLowerCase().includes(search_key.value.toLowerCase()))
+                  
+                );
+            } else {
+                isLoading.value = true
+                setTimeout(()=>{
+                 isLoading.value =false
+                },500)
+                return colleges.value.data;
+            }
+})
+
+
 function deleteData(id) {
 
 	Swal.fire({
@@ -50,7 +81,7 @@ function deleteData(id) {
 			axios.defaults.headers.common['Authorization'] = token.value;
 			axios.get('api/delete-college/' + id)
 				.then(() => {
-					colleges.value = colleges.value.filter(role => {
+					colleges.value.data = colleges.value.data.filter(role => {
 						return role.id != id;
 					})
 					toast.info("Data Successfully Deleted", {
@@ -75,7 +106,7 @@ function addData() {
 		'name': name.value,
 		}).then(() => {
 			isHide.value = false
-			loadData();
+			loadData('/api/get-colleges');
 			toast.success("Data Successfully Added!!", {
 				timeout: 2000
 			})
@@ -101,6 +132,9 @@ function addData() {
 		})
 }
 
+
+
+
 function editUser(){
 	if (isSubmit.value == true) return;
 	axios.defaults.headers.common['Authorization'] = token.value
@@ -111,7 +145,7 @@ function editUser(){
 			isHide.value = false
 			isEdit.value = false
 			resetState();
-			loadData();
+			loadData('/api/get-colleges');
 			toast.success("Data Successfully Updated!!", {
 				timeout: 2000
 			})
@@ -137,7 +171,7 @@ function editUser(){
 }
 
 onMounted(() => {
-	loadData();
+	loadData('/api/get-colleges');
 })
 
 function resetState() {
@@ -205,7 +239,7 @@ function showData(id){
 				<hr>
 				<form class="row g-3 ">
 					<div class="col-md-12">
-						<label for="validationCustom01" class="form-label">Role Name</label>
+						<label for="validationCustom01" class="form-label">College/School Name</label>
 						<input v-model="name" type="text" class="form-control border-primary" id="validationCustom01"
 							placeholder="Enter role name">
 						<div class="text-danger" v-if="errors.name && errTime == true">*{{ errors.name[0] }} </div>
@@ -224,156 +258,158 @@ function showData(id){
 
 		<div v-if="isHide==false" class="card border-top border-0 border-4 border-primary">
 			<div class="card-body">
-				<div class="row">
-					<div class="col-12 col-lg-8 col-xl-8 d-flex">
-					</div>
-					<div class="col-12 col-lg-4 col-xl-4 d-flex">
-						<div class="dt-buttons btn-group">
-							<button v-if="!isHide" @click="isHide = true" class="btn btn-outline-warning "
-								type="button">
-								<span><i class="fadeIn animated bx bx-plus-circle"></i>Create</span>
-							</button>
-						</div>
-					</div>
-					</div>
-					<hr>
-									<div class="table-responsive">
-                      <div class="row mb-3">
-						<div class="col-12 col-lg-4 col-xl-4 d-flex">
-							<select id="inputState " class="form-select  border-primary text-primary">
-								<i class="lni lni-funnel"></i>
-								<option selected>Filter By</option>
-								<option>Name</option>
-								<option>Age</option>
-								<option>Email</option>
+					<div class="table-responsive">
+						<div class="row g-3">
+							<div class="col-12 col-lg-10 col-xl-10 d-flex">
 
-							</select>
-						</div>
-						<div class="col-12 col-lg-3 col-xl-3 d-flex">
-							<select id="inputState" class="form-select  border-primary text-primary">
-								<option value="" selected disabled>Per Page</option>
-								<option value="10">10</option>
-								<option value="20">20</option>
-								<option value="30">30</option>
+							</div>
+							<div class="col-12 col-lg-2 col-xl-2 d-flex">
+								<div class="dt-buttons btn-group">
+									<button v-if="!isHide" @click="isHide = true" class="btn btn-outline-warning "
+										type="button">
+										<span><i class="fadeIn animated bx bx-plus-circle"></i>Create</span>
+									</button>
+								</div>
+							</div>
 
-							</select>
-						</div>
-						<div class="col-12 col-lg-5 col-xl-5 d-flex position-relative">
-							<input type="search" class="form-control ps-5  border-primary text-primary"
-								placeholder="Search..."> <span
-								class="position-absolute top-50 product-show translate-middle-y "><i
-									class="bx bx-search"></i></span>
+							
+							</div>
+							<hr>
+                                <div class="row mb-3">
+                                    <div class="col-12 col-lg-6 col-xl-6 d-flex">
+                                        <select id="inputState" v-model="perPage"
+                                            class="form-select border-primary text-primary">
+                                            <option value="" selected disabled>Per Page</option>
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                            <option value="30">30</option>
+                                        </select>
+                                    </div>
+                                   
 
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-12">
-							<table id="example2" class="table table-striped  dataTable text-primary">
-								<thead>
-									<tr role="row">
-										<th>#</th>
-										<th>Role name</th>
-										<th>CreatedAt</th>
-										<th>UpdatedAt</th>
-										<th width="5%">Actions</th>
-									</tr>
-								</thead>
-								<template v-if="isLoading">
-									<tbody>
+                                    <div class="col-12 col-lg-6 col-xl-6 d-flex position-relative">
+                                   <input v-model="search_key" type="search" class="form-control ps-5 border-primary text-primary" placeholder="Search by  Name" >
+                                        <span class="position-absolute top-50 product-show translate-middle-y"><i
+                                                class="bx bx-search"></i></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table id="example2" class="table table-striped dataTable text-primary">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Created Date</th>
+                                                    <th>Updated Date</th>
+                                                    <th width="5%">Actions</th>
+                                                   
+                                                </tr>
+                                            </thead>
+                                            <template v-if="isLoading">
+                                                <tbody>
+                                                    <div class="spinner-border text-primary mt-4" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </tbody>
+                                            </template>
 
-										<div class="spinner-border text-primary mt-4" role="status"> <span
-												class="visually-hidden">Loading...</span>
-										</div>
+                                            <template v-else>
+                                           <tbody v-if="colleges.data !=  null">
+                                            <tr role="row" v-for="(admission,index) in filterByStatus" :key="admission.id">
+                                            <th scope="row">{{ colleges.from +index }} </th>
+                                            <td>{{ admission.name }}</td>
+                                            <td>{{ format(new Date(admission.created_at), 'MMMM do, yyyy') }}</td>
+                                        <td>{{ format(new Date(admission.updated_at), 'MMMM do, yyyy') }}</td>
 
-
-									</tbody>
-
-								</template>
-								<template v-else>
-									<tbody v-if="colleges.length!=0">
-										<tr role="row" v-for="(college, index) in colleges" :key="college.index">
-											<td>{{ index + 1 }}</td>
-											<td>{{ college.name }}</td>
-											<td>{{ format(new Date(college.created_at), 'MMMM do, yyyy') }}</td>
-											<td>{{ format(new Date(college.updated_at), 'MMMM do, yyyy') }}</td>
-                                            
-											<td>
-												<div class="btn-group" role="group"
-													aria-label="Button group with nested dropdown">
-													<button type="button" class="btn btn-primary">Actions</button>
-													<div class="btn-group" role="group">
-														<button id="btnGroupDrop1" type="button"
-															class="btn btn-white dropdown-toggle dropdown-toggle-nocaret px-1"
-															data-bs-toggle="dropdown" aria-expanded="false">
-															<i class="bx bx-chevron-down"></i>
-														</button>
-														<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
-															<li><button @click.prevent="showData(college.id)" class="btn btn-outline-info dropdown-item "><i
-																		class="fadeIn animated bx bx-edit"></i>Edit</button>
-															</li>
-															<li><button @click.prevent="deleteData(college.id)"
-																	class="btn btn-outline-danger dropdown-item"><i
-																		class="fadeIn animated bx bx-trash"></i>Delete</button>
-															</li>
-															
-
-														</ul>
+                                   <td>
+					<div class="btn-group" role="group"
+									aria-label="Button group with nested dropdown">
+									<button type="button" class="btn btn-primary">Actions</button>
+									<div class="btn-group" role="group">
+										<button id="btnGroupDrop1" type="button"
+											class="btn btn-white dropdown-toggle dropdown-toggle-nocaret px-1"
+											data-bs-toggle="dropdown" aria-expanded="false">
+											<i class="bx bx-chevron-down"></i>
+										</button>
+										<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
+			<li><button @click.prevent="showData(admission.id)" class="btn btn-outline-info dropdown-item "><i
+						class="fadeIn animated bx bx-edit"></i>Edit</button>
+			</li>
+			<li><button @click.prevent="deleteData(admission.id)"
+					class="btn btn-outline-danger dropdown-item"><i
+						class="fadeIn animated bx bx-trash"></i>Delete</button>
+			</li>
+								
+		</ul>
 													</div>
-												</div>
-											</td>
+												</div>              
+                                                  </td>
+                                                    </tr>
+                                                
+                                                </tbody>
+                                                <tbody v-else>
+                                                    <div valign="top" colspan="6" class="text-center dataTables_empty mt-4"
+                                                      style="width: 250%;font-size: large;">
+                                                      <span class="badge bg-light text-primary">No Records Found!</span>
+                                                    </div>
+                                                </tbody>
+                                            </template>
+                                        </table>
+                                    </div>
+                                </div>
+     <div class="row mb-0">
+        <div class="col-sm-12 col-md-8">
+            <div class="dataTables_info">
+                Showing {{ colleges.from }} to {{ colleges.to }} of {{ colleges.total }} entries
+            </div>
+        </div>
+                <div class="col-sm-12 col-md-4">
+                  <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
+                        <ul class="pagination">
+                        <li @click="colleges.current_page ==1? '': loadData(colleges.first_page_url)" :class="{disabled:colleges.current_page == 1,'paginate_button page-item next': true,}" id="example2_previous">
+                                <a  aria-controls="example2" data-dt-idx="0" tabindex="0"
+                                     class="page-link"><i class="fadeIn animated bx bx-chevrons-left"></i></a>
+                        </li>
+                        <li @click="colleges.prev_page_url !=null? loadData       (colleges.prev_page_url): ''" :class="{disabled:colleges.prev_page_url ==null,'paginate_button page-item previous': true,}" id="simpletable_next">
+                               <a  aria-controls="example2" data-dt-idx="1" tabindex="0"
+                                    class="page-link"><i class="fadeIn animated bx bx-chevron-left"></i></a>
+                         </li>
+                        <li @click="loadData(colleges.path +'?page=' +colleges.current_page)" class="paginate_button page-item active">
+                               <a aria-controls="example2" data-dt-idx="6" tabindex="0"
+                                    class="page-link"> {{ colleges.current_page }}</a>
+                         </li>
+                        <li v-if="colleges.last_page >colleges.current_page +1"
+                        @click="loadData(colleges.path +'?page=' +(colleges.current_page +1))"  class="paginate_button page-item">                    
+                                <a  aria-controls="example2" data-dt-idx="6" tabindex="0"
+                                    class="page-link"> {{colleges.current_page + 1 }}
+                                                    </a>
+                         </li>
+                        <li v-if="colleges.last_page >colleges.current_page +2" 
+                        @click="loadData(colleges.path +'?page=' +(colleges.current_page +2))" class="paginate_button page-item"><a  aria-controls="example2" data-dt-idx="6" tabindex="0"  class="page-link">{{ colleges.current_page + 2 }} </a>
+                        </li>
+                          <li @click="colleges.next_page_url !=null ? loadData(colleges.next_page_url): ''" :class="{disabled:colleges.next_page_url ==null,
+                            'paginate_button page-item next': true,}" id="simpletable_next">
+                                <a  aria-controls="example2" data-dt-idx="6" tabindex="0"
+                                    class="page-link"><i class="fadeIn animated bx bx-chevron-right"></i>
+                                </a>
+                        </li>
+                        <li @click="colleges.current_page == colleges.last_page? '': loadData(colleges.last_page_url)" :class="{disabled:colleges.current_page == colleges.last_page,'paginate_button page-item next': true,}"  id="simpletable_next">
+                            <a  aria-controls="example2" data-dt-idx="7" tabindex="0"
+                                class="page-link"><i class="fadeIn animated bx bx-chevrons-right"></i>
+                                                    </a>
+                         </li>
+                        <li @click="loadData(colleges.path +'?page=' +colleges.current_page)"  class="paginate_button page-item" id="simpletable_next">
+                            <a  aria-controls="example2" data-dt-idx="7" tabindex="0"
+                                class="page-link"><i class="fadeIn animated bx bx-refresh"></i>
+                                                    </a>
+                        </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-										</tr>
-									</tbody>
-									<tbody v-else>
-										<div valign="top" colspan="6" class=" text-center dataTables_empty mt-4 "
-											style="width: 250%;font-size: large;">
-
-											<span class="badge bg-light text-primary">No Records Found!</span>
-										</div>
-									</tbody>
-
-								</template>
-							</table>
-						</div>
-					</div>
-					<div class="row mb-0">
-						<div class="col-sm-12 col-md-8">
-							<div class="dataTables_info">
-								Showing 1 to 10 of 57 entries
-							</div>
-						</div>
-						<div class="col-sm-12 col-md-4">
-							<div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
-								<ul class="pagination">
-									<li class="paginate_button page-item previous disabled" id="example2_previous">
-										<a href="#" aria-controls="example2" data-dt-idx="0" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevrons-left"></i> </a>
-									</li>
-									<li class="paginate_button page-item active">
-										<a href="#" aria-controls="example2" data-dt-idx="1" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevron-left"></i>
-										</a>
-									</li>
-									<li class="paginate_button page-item">
-										<a href="#" aria-controls="example2" data-dt-idx="6" tabindex="0" class="page-link">
-											1
-										</a>
-									</li>
-									<li class="paginate_button page-item">
-										<a href="#" aria-controls="example2" data-dt-idx="6" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevron-right"></i>
-										</a>
-									</li>
-									<li class="paginate_button page-item next" id="example2_next">
-										<a href="#" aria-controls="example2" data-dt-idx="7" tabindex="0" class="page-link">
-											<i class="fadeIn animated bx bx-chevrons-right"></i>
-										</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-				</div>
-			</div>
 		</div>
 	</div>
 </div></template>
